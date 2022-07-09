@@ -1,0 +1,25 @@
+(ns racertay.core
+  (:gen-class))
+
+
+(defrecord Tuple [x y z w])
+
+(defn -main
+  "I don't do a whole lot ... yet."
+  [& args]
+  (println "Hello, World!"))
+
+(defn tuple [x y z w]
+  (Tuple. x y z w))
+
+(defn vect? [tup]
+  (== 0.0 (:w tup)))
+
+(defn point? [tup]
+  (== 1.0 (:w tup)))
+
+(defn point [x y z]
+  (tuple x y z 1.0))
+
+(defn vect [x y z]
+  (tuple x y z 0.0))
