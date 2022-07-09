@@ -1,3 +1,0 @@
-(ns racertay.fump)
-
-(def greet "'allo Mate")
