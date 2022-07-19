@@ -2,9 +2,9 @@
   (:require [racertay.fcmp :refer :all]))
 
 (defn color [r g b]
-  {:red r
-   :green g
-   :blue b})
+  {:red (double r)
+   :green (double g)
+   :blue (double b)})
 
 (defn color-eq? [c1 c2]
   (and
