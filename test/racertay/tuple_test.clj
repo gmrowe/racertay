@@ -6,16 +6,16 @@
 (deftest tuple-test
   (let [t (tuple 4.3 -4.2 3.1 0.0)]
     (testing "a tuple should have an :x key"
-      (is (= (:x t) 4.3)))
+      (is (= (x t) 4.3)))
 
     (testing "a tuple should have a :y key"
-      (is (= (:y t) -4.2)))
+      (is (= (y t) -4.2)))
 
     (testing "a tuple should have a :z key"
-      (is (= (:z t) 3.1)))
+      (is (= (z t) 3.1)))
 
     (testing "a tuple should have a :w key"
-      (is (= (:w t) 0.0)))
+      (is (= (w t) 0.0)))
 
     (testing "a tuple with w = 0.0 is a vect"
       (is (vect? t)))
