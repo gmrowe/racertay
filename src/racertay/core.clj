@@ -20,7 +20,7 @@
     (projectile new-pos new-vel)))
 
 (defn flight-path [env proj]
-  (take-while #(> (:y %) 0)
+  (take-while #(> (y %) 0)
               (map :position (iterate (partial tick env) proj))))
 
 
@@ -38,7 +38,7 @@
                             (projectile start-pos velocity))]
     (reduce (fn [c pos]
               (write-pixel c
-                           (int (:x pos))
+                           (int (x pos))
                            (int (- (:height c) (:y pos)))
                            projectile-color))
             (canvas canvas-width canvas-height)
