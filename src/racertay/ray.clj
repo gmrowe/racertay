@@ -1,5 +1,6 @@
 (ns racertay.ray
-  (:require [racertay.tuple :as tup]))
+  (:require [racertay.tuple :as tup]
+            [racertay.matrix :as matrix]))
 
 (defn ray [origin-pt direction-vec]
   {:origin origin-pt
@@ -16,3 +17,7 @@
 
 (defn position [r t]
   (tup/tup-add (origin r) (distance r t)))
+
+(defn transform [r m]
+  (ray (matrix/mat-mul-tup m (origin r))
+       (matrix/mat-mul-tup m (direction r))))
