@@ -11,3 +11,7 @@
   (:object inter))
 
 (def intersections vector)
+
+(defn hit [inters]
+  (when-let [hits (seq (filter #(pos? (t %)) inters))]
+    (apply min-key t hits)))
