@@ -1,6 +1,7 @@
 (ns racertay.sphere
   (:require [racertay.ray :as ray]
-            [racertay.tuple :as tup]))
+            [racertay.tuple :as tup]
+            [racertay.intersection :as inter]))
 
 (defn sphere []
   {:id (java.util.UUID/randomUUID)})
@@ -14,6 +15,7 @@
         c (dec (tup/dot sphere-to-ray-vec sphere-to-ray-vec))
         discriminant (- (* b b) (* 4 a c))]
     (if (neg? discriminant)
-      []
-      [(/ (- (- b) (Math/sqrt discriminant)) (* a 2))
-       (/ (+ (- b) (Math/sqrt discriminant)) (* a 2))])))
+      (inter/intersections)
+      (inter/intersections
+       (inter/intersection (/ (- (- b) (Math/sqrt discriminant)) (* a 2)) s)
+       (inter/intersection (/ (+ (- b) (Math/sqrt discriminant)) (* a 2)) s)))))
