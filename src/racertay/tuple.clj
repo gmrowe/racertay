@@ -2,7 +2,7 @@
   (:require [racertay.fcmp :refer :all]))
 
 (defn tuple [x y z w]
-  [x y z w])
+  [(double x) (double y) (double z) (double  w)])
 
 (defn x [tup]
   (let [[x _ _ _] tup]
