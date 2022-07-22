@@ -1,50 +1,34 @@
 (ns racertay.core
-  (:require [clojure.string :as s]
-            [racertay.tuple :refer :all]
+  (:require [racertay.tuple :refer [point x y]]
             [racertay.canvas :refer :all]
+            [racertay.transformations :refer :all]
+            [racertay.matrix :refer :all]
             [racertay.color :refer [color]])
   (:gen-class))
 
-(defn projectile [position velocity]
-  {:position position
-   :velocity velocity})
-
-(defn environment [gravity wind]
-  {:gravity gravity
-   :wind wind})
-
-(defn tick [env proj]
-  (let [new-pos (tup-add (:position proj) (:velocity proj))
-        new-vel (tup-add (tup-add (:velocity proj) (:gravity env))
-                         (:wind env))]
-    (projectile new-pos new-vel)))
-
-(defn flight-path [env proj]
-  (take-while #(> (y %) 0)
-              (map :position (iterate (partial tick env) proj))))
 
 
-(def flight-canvas
-  (let [start-pos (point 0 1 0)
-        start-direction (normalize (vect 1.0 2.3 0))
-        start-speed 7.5
-        velocity (tup-mul-scalar start-direction start-speed)
-        gravity (vect 0 -0.1 0)
-        wind (vect -0.01 0 0)
-        canvas-width 400
-        canvas-height 300
-        projectile-color (color 1.0 1.0 0.0)
-        flight (flight-path (environment gravity wind)
-                            (projectile start-pos velocity))]
-    (reduce (fn [c pos]
-              (write-pixel c
-                           (int (x pos))
-                           (int (- (:height c) (:y pos)))
-                           projectile-color))
-            (canvas canvas-width canvas-height)
-            flight)))
+(defn clock-face [clock-radius]
+  (let [hours 12
+        origin (point 0 0 0)
+        noon (point 0 1 0)
+        scale (scaling 1 clock-radius 1)
+        rotation-angle (/ (* Math/PI 2) hours)
+        rotate (fn [n] (rotation-z (* n rotation-angle)))]
+    (map (fn [n]
+           (mat-mul-tup (mat-mul (rotate n) scale (translation 0 1 0)) origin))
+         (range 0 hours))))
+
+(def black (color 0 0 0))
+(def white (color 1 1 1))
+
+(defn clock-canvas [width height clock-radius]
+  (let [init-canvas (canvas width height white)
+        canvas-translation (translation (/ width 2) (/ height 2) 0)
+        canvas-space (map #(mat-mul-tup canvas-translation %) (clock-face clock-radius))]
+    (reduce (fn [c p] (write-pixel c (int (x p)) (int (y p)) black)) init-canvas canvas-space)))
 
 (defn -main
   [& args]
   (let [filename "output.ppm"]
-    (spit filename (canvas-to-ppm flight-canvas))))
+    (spit filename (canvas-to-ppm (clock-canvas 200 200 50)))))
