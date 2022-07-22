@@ -57,7 +57,7 @@
   (get-in mat [:data (raw-index mat row col)]))
 
 (defn mat-assoc [mat row col val]
-  (assoc-in mat [:data (raw-index mat row col)] val))
+  (assoc-in mat [:data (raw-index mat row col)] (double val)))
 
 (defn mat-eq? [mat1 mat2]
   (and
@@ -73,11 +73,15 @@
   (for [row (range 0 (:height mat))]
     (mat-get mat row col)))
 
-(defn mat-mul [mat1 mat2]
-  (apply mat4x4
-         (for [r (range 0 (:height mat1))
-               c (range 0 (:width mat2))]
-           (apply + (map * (mat-row mat1 r) (mat-col mat2 c))))))
+(defn mat-mul
+  ([mat] mat)
+  ([mat1 mat2]
+   (apply mat4x4
+          (for [r (range 0 (:height mat1))
+                c (range 0 (:width mat2))]
+            (apply + (map * (mat-row mat1 r) (mat-col mat2 c))))))
+  ([mat1 mat2 & more]
+   (reduce mat-mul (mat-mul mat1 mat2) more)))
 
 (defn mat-mul-tup [mat tup]
   (apply tuple
