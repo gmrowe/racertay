@@ -15,7 +15,13 @@
           pixels (:pixels c)
           black (color 0 0 0)]
       (is (= 200 (count pixels)))
-      (is (every? #(color-eq? black %) pixels)))))
+      (is (every? #(color-eq? black %) pixels))))
+
+  (testing "a canvas can be initialized with an arbitrary color"
+    (let [cyan (color 0 1 1)
+          c (canvas 10 20 cyan)
+          pixels (:pixels c)]
+      (is (every? #(color-eq? cyan %) pixels)))))
 
 (deftest canvas-writing-test
   (testing "pixels of a canvas can be written to"
@@ -49,10 +55,10 @@
              pixel-data))))
 
   (testing "long lines in ppm file should be split"
-    (let [c (fill-canvas (canvas 10 2) (color 1.0 0.8 0.6))
+    (let [c (canvas 10 2 (color 1.0 0.8 0.6))
           ppm (canvas-to-ppm c)
           pixel-data (->> (s/split-lines ppm)
-                          (drop 3) ; drop the header
+                          (drop 3)    ; drop the header
                           (take 4))]
       (is (= ["255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 255 204"
               "153 255 204 153 255 204 153 255 204 153 255 204 153"
