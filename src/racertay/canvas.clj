@@ -5,14 +5,12 @@
             [racertay.color :refer [color]]))
 
 
-(defn canvas [w h]
-  {:width w
-   :height h
-   :pixels (vec (repeat (* w h) (color 0 0 0)))})
-
-(defn fill-canvas [c color]
-  (let [new-pixels (map (constantly color) (:pixels c))]
-    (assoc c :pixels new-pixels)))
+(defn canvas
+  ([w h] (canvas w h (color 0 0 0)))
+  ([w h color]
+   {:width w
+    :height h
+    :pixels (vec (repeat (* w h) color))}))
 
 (defn- int-in-range? [start end val]
   (and (<= start val) (< val end)))
