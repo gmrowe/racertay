@@ -35,23 +35,9 @@
 (def max-subpixel-value 255)
 (def max-ppm-line-len 70)
 
-(defn- output-pixel
-  [p]
-  (letfn [(scale-subpixel [sub]
-            (-> (* max-subpixel-value sub)
-                (Math/round)
-                (clamp 0 max-subpixel-value)))]
-    (format "%s %s %s"
-            (scale-subpixel (:red p))
-            (scale-subpixel (:green p))
-            (scale-subpixel (:blue p)))))
-
 (defn- split-str-around-index [str index]
   [(subs str 0 index)
    (subs str (inc index))])
-
-(defn- output-line [line]
-  (s/join " " (map output-pixel line)))
 
 (defn- break-line [max-line-len line]
   (if (< (count line) max-line-len)
@@ -61,18 +47,26 @@
           end (break-line max-line-len more)]
       (format "%s%n%s" begin end))))
 
-(defn- subpixel->byte [sp]
-  (-> sp
-      (* max-subpixel-value)
-      (int)
-      (clamp 0 max-subpixel-value)
-      (unchecked-byte)))
+(defn scale-subpixel [sub]
+  (-> (* max-subpixel-value sub)
+      (Math/round)
+      (clamp 0 max-subpixel-value)))
 
 (defn- conj-pixel [bs pixel]
   (-> bs
-      (conj (subpixel->byte (:red pixel)))
-      (conj (subpixel->byte (:green pixel)))
-      (conj (subpixel->byte (:blue pixel)))))
+      (conj (unchecked-byte (scale-subpixel (:red pixel))))
+      (conj (unchecked-byte (scale-subpixel (:green pixel))))
+      (conj (unchecked-byte (scale-subpixel (:blue pixel))))))
+
+(defn- output-pixel
+  [p]
+  (format "%s %s %s"
+          (scale-subpixel (:red p))
+          (scale-subpixel (:green p))
+          (scale-subpixel (:blue p))))
+
+(defn- output-line [line]
+  (s/join " " (map output-pixel line)))
 
 (defn canvas-to-p6-ppm [c]
   (let [header (format "P6\n%s %s\n%s\n" (:width c) (:height c) max-subpixel-value)]
