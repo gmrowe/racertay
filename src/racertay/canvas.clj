@@ -66,7 +66,6 @@
       (* max-subpixel-value)
       (int)
       (clamp 0 max-subpixel-value)
-      (bit-and 0xFF)
       (unchecked-byte)))
 
 (defn- conj-pixel [bs pixel]
@@ -76,9 +75,9 @@
       (conj (subpixel->byte (:blue pixel)))))
 
 (defn canvas-to-p6-ppm [c]
-  (let [header (format "P6\n%s %s\n%s\n" (:width c) (:height c) max-subpixel-value)
-        bs (reduce conj-pixel (vec (.getBytes header)) (:pixels c))]
-    (byte-array bs)))
+  (let [header (format "P6\n%s %s\n%s\n" (:width c) (:height c) max-subpixel-value)]
+    (byte-array
+     (reduce conj-pixel (vec (.getBytes header)) (:pixels c)))))
 
 (defn canvas-to-ppm [c]
   (let [header (format "P3%n%s %s%n%s%n" (:width c) (:height c) max-subpixel-value)
