@@ -1,9 +1,6 @@
 (ns racertay.canvas
   (:require [clojure.string :as s]
-            [racertay.tuple :refer :all]
-            ;[racertay.fcmp :refer :all]
             [racertay.color :refer [color]]))
-
 
 (defn canvas
   ([w h] (canvas w h (color 0 0 0)))
@@ -26,7 +23,7 @@
   (let [index (+ (* (:width canvas) y) x)]
     (get-in canvas [:pixels index])))
 
-(defn clamp [value min max]
+(defn- clamp [value min max]
   (cond
     (< value min) min
     (> value max) max
@@ -47,12 +44,12 @@
           end (break-line max-line-len more)]
       (format "%s%n%s" begin end))))
 
-(defn scale-subpixel [sub]
+(defn- scale-subpixel [sub]
   (-> (* max-subpixel-value sub)
       (Math/round)
       (clamp 0 max-subpixel-value)))
 
-(defn- conj-pixel [bs pixel]
+(defn- conj-pixel-bytes [bs pixel]
   (-> bs
       (conj (unchecked-byte (scale-subpixel (:red pixel))))
       (conj (unchecked-byte (scale-subpixel (:green pixel))))
@@ -71,7 +68,7 @@
 (defn canvas-to-p6-ppm [c]
   (let [header (format "P6\n%s %s\n%s\n" (:width c) (:height c) max-subpixel-value)]
     (byte-array
-     (reduce conj-pixel (vec (.getBytes header)) (:pixels c)))))
+     (reduce conj-pixel-bytes (vec (.getBytes header)) (:pixels c)))))
 
 (defn canvas-to-ppm [c]
   (let [header (format "P3%n%s %s%n%s%n" (:width c) (:height c) max-subpixel-value)
