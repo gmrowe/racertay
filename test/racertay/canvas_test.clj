@@ -70,4 +70,3 @@
     (let [c (canvas 5 3)
           ppm (canvas-to-ppm c)]
       (is (= \newline (last ppm))))))
-
