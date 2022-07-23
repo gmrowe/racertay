@@ -70,3 +70,18 @@
     (let [c (canvas 5 3)
           ppm (canvas-to-ppm c)]
       (is (= \newline (last ppm))))))
+
+(deftest canvas-to-p6-ppm-test
+  (testing "canvas-to-p6-ppm outputs correct header"
+    (let [c (canvas 3 3)
+          expected-header (vec (.getBytes (format "P6%n3 3%n255%n")))]
+      (is (= expected-header
+             (take (count expected-header) (canvas-to-p6-ppm c))))))
+
+  (testing "canvas-to-p6-ppm outputs correct pixel data"
+    (let [c (canvas 2 1 (color 1.5 0.5 -0.1))
+          bytes-per-pixel 3
+          byte-count (* bytes-per-pixel (count (:pixels c)))
+          ppm (vec (canvas-to-p6-ppm c))
+          pixel-data (drop (- (count ppm) byte-count) ppm)]
+      (is (= [-1 -128 0 -1 -128 0] pixel-data)))))
