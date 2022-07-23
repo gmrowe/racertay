@@ -3,8 +3,10 @@
             [racertay.ray :as ray]
             [racertay.tuple :as tup]
             [racertay.fcmp :as fcmp]
-            [racertay.sphere :refer :all]
-            [racertay.intersection :as inter]))
+            [racertay.intersection :as inter]
+            [racertay.matrix :as matrix]
+            [racertay.transformations :as xform]
+            [racertay.sphere :refer :all]))
 
 (deftest sphere-creation-test
   (testing "A sphere must always return a unique value"
@@ -58,4 +60,28 @@
           xs (intersect s r)]
       (is (= 2 (count xs)))
       (is (= s (inter/object (nth xs 0))))
-      (is (= s (inter/object (nth xs 1)))))))
+      (is (= s (inter/object (nth xs 1))))))
+
+  (testing "Intersecting a scaled sphere with a ray"
+    (let [r (ray/ray (tup/point 0 0 -5) (tup/vect 0 0 1))
+          s (apply-transform (sphere) (xform/scaling 2 2 2))
+          xs (intersect s r)]
+      (is (= 2 (count xs)))
+      (is (fcmp/nearly-eq? 3 (inter/t (nth xs 0))))
+      (is (fcmp/nearly-eq? 7 (inter/t (nth xs 1))))))
+
+  (testing "Intersecting a translated sphere with a ray"
+    (let [r (ray/ray (tup/point 0 0 -5) (tup/vect 0 0 1))
+          s (apply-transform (sphere) (xform/translation 5 0 0))
+          xs (intersect s r)]
+      (is (zero? (count xs))))))
+
+(deftest sphere-transformation-test
+  (testing "A sphere has a default transformation"
+    (let [s (sphere)]
+      (is (matrix/mat-eq? matrix/identity-matrix (transform s)))))
+
+  (testing "A sphere's transformation can be changed"
+    (let [t (xform/translation 2 3 4)
+          s (apply-transform (sphere) t)]
+      (is (matrix/mat-eq? t (transform s))))))
