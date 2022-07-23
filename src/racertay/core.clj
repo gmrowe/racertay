@@ -35,9 +35,8 @@
         x (range 0 (:width canvas))]
     [x y]))
 
-(def sphere-canvas
-  (let [width 100
-        canvas (canvas width width)
+(defn sphere-canvas [width]
+  (let [canvas (canvas width width)
         s (sphere/sphere)
         ray-source (point 0 0 -5)
         wall-z 10.0
@@ -60,6 +59,6 @@
 (defn -main
   [& args]
   (let [filename "output2.ppm"
-        ppm (canvas-to-p6-ppm sphere-canvas)]
+        ppm (canvas-to-p6-ppm (sphere-canvas 100))]
     (with-open [out (io/output-stream filename)]
       (.write out ppm))))
