@@ -17,12 +17,19 @@
 (defn material [sphere]
   (:material sphere))
 
+(defn inverse-transform [sphere]
+  (:inverse-transform sphere))
+
 (defn assoc-material [sphere material]
   (assoc sphere :material material))
 
-(defn apply-transform [sphere xform]
-  (let [updated (update sphere :transform (partial matrix/mat-mul xform))]
-    (assoc updated :inverse-transform (matrix/inverse (:transform updated)))))
+(defn apply-transform
+  ([sphere xform]
+   (let [updated (update sphere :transform (partial matrix/mat-mul xform))]
+     (assoc updated :inverse-transform (matrix/inverse (:transform updated)))))
+  
+  ([sphere xform & more]
+   (reduce apply-transform (apply-transform sphere xform) more)))
 
 (def world-origin (tup/point 0 0 0))
 

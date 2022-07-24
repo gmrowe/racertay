@@ -1,7 +1,7 @@
 (ns racertay.sphere-test
   (:require [clojure.test :refer :all]
-            [racertay.transformations :as xform]
             [racertay.sphere :refer :all]
+            [racertay.transformations :as xform]
             [racertay.ray :as ray]
             [racertay.tuple :as tup]
             [racertay.fcmp :as fcmp]
@@ -89,7 +89,24 @@
   (testing "A sphere's transformation can be changed"
     (let [t (xform/translation 2 3 4)
           s (apply-transform (sphere) t)]
-      (is (matrix/mat-eq? t (transform s))))))
+      (is (matrix/mat-eq? t (transform s)))))
+
+  (testing "A sphere can incorporate multiple transfomations"
+    (let [trans (xform/translation 2 3 4)
+          rot (xform/rotation-z (/ Math/PI 4))
+          scale (xform/scaling 2 2 2)
+          compound-op (matrix/mat-mul rot trans scale)
+          s (apply-transform (sphere) scale trans rot)]
+      (is (matrix/mat-eq? compound-op (transform s)))))
+
+  (testing "A sphere's inverse-transform is updated after transfomations"
+    (let [trans (xform/translation 2 3 4)
+          rot (xform/rotation-z (/ Math/PI 4))
+          scale (xform/scaling 2 2 2)
+          compound-op (matrix/mat-mul rot trans scale)
+          s (apply-transform (sphere) scale trans rot)]
+      (is (matrix/mat-eq? (matrix/inverse compound-op)
+                          (inverse-transform s))))))
 
 (deftest sphere-normal-test
   (testing "A normal of a sphere on the x-axis"
