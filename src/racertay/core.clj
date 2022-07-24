@@ -37,10 +37,14 @@
 
 (defn sphere-canvas [width]
   (let [canvas (canvas width width)
-        s (sphere/sphere)
+        xform (mat-mul
+               (shearing 0.4 0.6 0 0 0 0)
+               (rotation-z (/ Math/PI 6))
+               (scaling 1.3 0.3 1))
+        s (sphere/apply-transform (sphere/sphere) xform)
         ray-source (point 0 0 -5)
         wall-z 10.0
-        wall-size 15.0
+        wall-size 10.0
         pixel-size (/ wall-size width)
         half-wall (/ wall-size 2)
         sphere-color (color 1 0 0)
