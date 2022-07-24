@@ -38,7 +38,6 @@
 (defn sphere-canvas [width]
   (let [canvas (canvas width width)
         xform (mat-mul
-               (shearing 0.4 0.6 0 0 0 0)
                (rotation-z (/ Math/PI 6))
                (scaling 1.3 0.3 1))
         s (sphere/apply-transform (sphere/sphere) xform)
