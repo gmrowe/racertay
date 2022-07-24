@@ -6,18 +6,20 @@
 
 (defn sphere []
   {:id (java.util.UUID/randomUUID)
-   :transform matrix/identity-matrix})
+   :transform matrix/identity-matrix
+   :inverse-transform matrix/identity-matrix})
 
 (defn transform [sphere]
   (:transform sphere))
 
 (defn apply-transform [sphere xform]
-  (update-in sphere [:transform] (partial matrix/mat-mul xform)))
+  (let [updated (update sphere :transform (partial matrix/mat-mul xform))]
+    (assoc updated :inverse-transform (matrix/inverse (:transform updated)))))
 
 (def world-origin (tup/point 0 0 0))
 
 (defn intersect [sphere ray] 
-  (let [r (ray/transform ray (matrix/inverse (transform sphere)))
+  (let [r (ray/transform ray (:inverse-transform sphere))
         sphere-to-ray-vec (tup/tup-sub (ray/origin r) world-origin)
         a (tup/dot (ray/direction r) (ray/direction r))
         b (* 2 (tup/dot (ray/direction r) sphere-to-ray-vec))
