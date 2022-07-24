@@ -129,3 +129,15 @@
           b (vect 2 3 4)]
       (is (tup-eq? (vect -1 2 -1) (cross a b)))
       (is (tup-eq? (vect 1 -2 1) (cross b a))))))
+
+(deftest vector-reflection-test
+  (testing "Reflecting a vector approaching at 45 degrees about a normal"
+    (let [v (vect 1 -1 0)
+          n (vect 0 1 0)]
+      (is (tup-eq? (vect 1 1 0)(reflect v n)))))
+
+  (testing "Reflecting a vector off a slanted surface"
+    (let [v (vect 0 -1 0)
+          rad-2-over-2 (/ (Math/sqrt 2) 2)
+          n (vect rad-2-over-2 rad-2-over-2 0)]
+      (is (tup-eq? (vect 1 0 0) (reflect v n))))))
