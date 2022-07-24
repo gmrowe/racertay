@@ -2,15 +2,23 @@
   (:require [racertay.ray :as ray]
             [racertay.tuple :as tup]
             [racertay.intersection :as inter]
-            [racertay.matrix :as matrix]))
+            [racertay.matrix :as matrix]
+            [racertay.material :as material]))
 
 (defn sphere []
   {:id (java.util.UUID/randomUUID)
    :transform matrix/identity-matrix
-   :inverse-transform matrix/identity-matrix})
+   :inverse-transform matrix/identity-matrix
+   :material (material/material)})
 
 (defn transform [sphere]
   (:transform sphere))
+
+(defn material [sphere]
+  (:material sphere))
+
+(defn assoc-material [sphere material]
+  (assoc sphere :material material))
 
 (defn apply-transform [sphere xform]
   (let [updated (update sphere :transform (partial matrix/mat-mul xform))]

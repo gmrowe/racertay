@@ -1,20 +1,25 @@
 (ns racertay.sphere-test
   (:require [clojure.test :refer :all]
+            [racertay.transformations :as xform]
+            [racertay.sphere :refer :all]
             [racertay.ray :as ray]
             [racertay.tuple :as tup]
             [racertay.fcmp :as fcmp]
             [racertay.intersection :as inter]
             [racertay.matrix :as matrix]
-            [racertay.transformations :as xform]
-            [racertay.sphere :refer :all]))
+            [racertay.material :as material]))
 
 (deftest sphere-creation-test
   (testing "A sphere must always return a unique value"
     (let [s1 (sphere)
           s2 (sphere)]
       (is (= s1 s1))
-      (is (not= s1 s2)))))
-  
+      (is (not= s1 s2))))
+
+  (testing "A sphere has a default material"
+    (let [s (sphere)]
+      (is (material/material-eq? (material/material) (material s))))))
+
 (deftest sphere-ray-intersection-test
   (testing "A ray which intersects a sphere at two points"
     (let [r (ray/ray (tup/point 0 0 -5) (tup/vect 0 0 1))
@@ -127,3 +132,8 @@
           n (normal-at s (tup/point 0 rad-2-over-2 (- rad-2-over-2)))]
       (is (tup/tup-eq? (tup/vect 0 0.97014 -0.24254) n)))))
 
+(deftest sphere-material-test
+  (testing "A sphere's material can be changed"
+    (let [m (material/assoc-ambient (material/material) 1)
+          s (assoc-material (sphere) m)]
+      (is (material/material-eq? m (material s))))))
