@@ -85,3 +85,44 @@
     (let [t (xform/translation 2 3 4)
           s (apply-transform (sphere) t)]
       (is (matrix/mat-eq? t (transform s))))))
+
+(deftest sphere-normal-test
+  (testing "A normal of a sphere on the x-axis"
+    (let [s (sphere)
+          n (normal-at s (tup/point 1 0 0))]
+      (is (tup/tup-eq? (tup/vect 1 0 0) n))))
+
+  (testing "A normal of a sphere on the y-axis"
+    (let [s (sphere)
+          n (normal-at s (tup/point 0 1 0))]
+      (is (tup/tup-eq? (tup/vect 0 1 0) n))))
+
+  (testing "A normal of a sphere on the z-axis"
+    (let [s (sphere)
+          n (normal-at s (tup/point 0 0 1))]
+      (is (tup/tup-eq? (tup/vect 0 0 1) n))))
+
+  (testing "A normal of a sphere at a nonaxial point"
+    (let [s (sphere)
+          rad-3-over-3 (/ (Math/sqrt 3) 3)
+          n (normal-at s (tup/point rad-3-over-3 rad-3-over-3 rad-3-over-3))]
+      (is (tup/tup-eq? (tup/vect rad-3-over-3 rad-3-over-3 rad-3-over-3) n))))
+
+  (testing "A normal of a sphere at a nonaxial point"
+    (let [s (sphere)
+          rad-3-over-3 (/ (Math/sqrt 3) 3)
+          n (normal-at s (tup/point rad-3-over-3 rad-3-over-3 rad-3-over-3))]
+      (is (tup/tup-eq? (tup/normalize n) n))))
+
+  (testing "The normal of a translated sphere"
+    (let [s (apply-transform (sphere) (xform/translation 0 1 0))
+          n (normal-at s (tup/point 0 1.70711 -0.70711))]
+      (is (tup/tup-eq? (tup/vect 0 0.70711 -0.70711) n))))
+
+  (testing "The normal on a transfomed sphere"
+    (let [xform (matrix/mat-mul
+                 (xform/scaling 1 0.5 1) (xform/rotation-z (/ Math/PI 5)))
+          s (apply-transform (sphere) xform)
+          rad-2-over-2 (/ (Math/sqrt 2) 2)
+          n (normal-at s (tup/point 0 rad-2-over-2 (- rad-2-over-2)))]
+      (is (tup/tup-eq? (tup/vect 0 0.97014 -0.24254) n)))))

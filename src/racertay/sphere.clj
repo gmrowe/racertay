@@ -30,3 +30,12 @@
       (inter/intersections
        (inter/intersection (/ (- (- b) (Math/sqrt discriminant)) (* a 2)) sphere)
        (inter/intersection (/ (+ (- b) (Math/sqrt discriminant)) (* a 2)) sphere)))))
+
+(defn normal-at [sphere point]
+  (let [object-point (matrix/mat-mul-tup (:inverse-transform sphere) point)
+        object-normal (tup/tup-sub object-point world-origin)
+        world-normal (matrix/mat-mul-tup
+                      (matrix/transpose (:inverse-transform sphere))
+                      object-normal)]
+    (tup/normalize
+     (tup/vect (tup/x world-normal) (tup/y world-normal) (tup/z world-normal)))))
