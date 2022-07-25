@@ -7,7 +7,9 @@
             [racertay.color :refer [color]]
             [racertay.sphere :as sphere]
             [racertay.ray :as ray]
-            [racertay.intersection :as intersect])
+            [racertay.intersection :as intersect]
+            [racertay.material :as material]
+            [racertay.light :as light])
   (:gen-class))
 
 (defn clock-face [clock-radius]
@@ -35,7 +37,7 @@
         x (range 0 (:width canvas))]
     [x y]))
 
-(defn sphere-canvas [width]
+(defn red-circle-canvas [width]
   (let [canvas (canvas width width)
         xform (mat-mul
                (rotation-z (/ Math/PI 6))
@@ -59,9 +61,43 @@
                 canvas)))]
     (reduce f canvas (canvas-indices canvas))))
 
+(defn sphere-canvas [width]
+  (let [canvas (canvas width width)
+        sphere-color (color 1 1 0)
+        scale (scaling 1.3 0.3 1)
+        rot (rotation-z (/ Math/PI 6))
+        m (material/assoc-color (material/material) sphere-color)
+        s (-> (sphere/sphere)
+              (sphere/assoc-material m)
+              (sphere/apply-transform scale rot))
+        ray-source (point 0 0 -5)
+        wall-z 10.0
+        wall-size 10.0
+        pixel-size (/ wall-size width)
+        half-wall (/ wall-size 2)
+        light-color (color 1 1 1)
+        light-pos (point -10 10 -10)
+        light (light/point-light light-pos light-color)
+        f (fn [canvas [x y]]
+            (let [world-y (- half-wall (* pixel-size y))
+                  world-x (+ (- half-wall) (* pixel-size x))
+                  wall-position (point world-x world-y wall-z)
+                  ray-direction (normalize (tup-sub wall-position ray-source))
+                  r (ray/ray ray-source ray-direction)
+                  xs (sphere/intersect s r)]
+              (if-let [i (intersect/hit xs)]
+                (let [point (ray/position r (intersect/t i))
+                      normal (sphere/normal-at (intersect/object i) point)
+                      eye (tup-neg (ray/direction r))
+                      material (sphere/material (intersect/object i))
+                      color (material/lighting material light point eye normal)]
+                  (write-pixel canvas x y color))
+                canvas)))]
+    (reduce f canvas (canvas-indices canvas))))
+
 (defn -main
   [& args]
-  (let [filename "output2.ppm"
-        ppm (canvas-to-p6-ppm (sphere-canvas 100))]
+  (let [filename "output3.ppm"
+        ppm (canvas-to-p6-ppm (sphere-canvas 500))]
     (with-open [out (io/output-stream filename)]
       (.write out ppm))))
