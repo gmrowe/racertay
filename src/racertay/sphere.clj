@@ -20,7 +20,7 @@
      (assoc updated :inverse-transform (matrix/inverse (:transform updated)))))
   
   ([sphere xform & more]
-   (reduce apply-transform (apply-transform sphere xform) more)))
+   (reduce apply-transform sphere (cons xform more))))
 
 (def world-origin (tup/point 0 0 0))
 
