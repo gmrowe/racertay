@@ -11,16 +11,7 @@
    :inverse-transform matrix/identity-matrix
    :material (material/material)})
 
-(defn transform [sphere]
-  (:transform sphere))
-
-(defn material [sphere]
-  (:material sphere))
-
-(defn inverse-transform [sphere]
-  (:inverse-transform sphere))
-
-(defn assoc-material [sphere material]
+#_(defn assoc-material [sphere material]
   (assoc sphere :material material))
 
 (defn apply-transform

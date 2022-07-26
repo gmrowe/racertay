@@ -68,7 +68,7 @@
         rot (rotation-z (/ Math/PI 6))
         m (material/assoc-color (material/material) sphere-color)
         s (-> (sphere/sphere)
-              (sphere/assoc-material m)
+              (assoc :material m)
               (sphere/apply-transform scale rot))
         ray-source (point 0 0 -5)
         wall-z 10.0
@@ -89,7 +89,7 @@
                 (let [point (ray/position r (intersect/t i))
                       normal (sphere/normal-at (intersect/object i) point)
                       eye (tup-neg (ray/direction r))
-                      material (sphere/material (intersect/object i))
+                      material (:material (intersect/object i))
                       color (material/lighting material light point eye normal)]
                   (write-pixel canvas x y color))
                 canvas)))]

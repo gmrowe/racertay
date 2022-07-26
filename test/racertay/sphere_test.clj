@@ -18,7 +18,7 @@
 
   (testing "A sphere has a default material"
     (let [s (sphere)]
-      (is (material/material-eq? (material/material) (material s))))))
+      (is (material/material-eq? (material/material) (:material s))))))
 
 (deftest sphere-ray-intersection-test
   (testing "A ray which intersects a sphere at two points"
@@ -84,12 +84,12 @@
 (deftest sphere-transformation-test
   (testing "A sphere has a default transformation"
     (let [s (sphere)]
-      (is (matrix/mat-eq? matrix/identity-matrix (transform s)))))
+      (is (matrix/mat-eq? matrix/identity-matrix (:transform s)))))
 
   (testing "A sphere's transformation can be changed"
     (let [t (xform/translation 2 3 4)
           s (apply-transform (sphere) t)]
-      (is (matrix/mat-eq? t (transform s)))))
+      (is (matrix/mat-eq? t (:transform s)))))
 
   (testing "A sphere can incorporate multiple transfomations"
     (let [trans (xform/translation 2 3 4)
@@ -97,7 +97,7 @@
           scale (xform/scaling 2 2 2)
           compound-op (matrix/mat-mul rot trans scale)
           s (apply-transform (sphere) scale trans rot)]
-      (is (matrix/mat-eq? compound-op (transform s)))))
+      (is (matrix/mat-eq? compound-op (:transform s)))))
 
   (testing "A sphere's inverse-transform is updated after transfomations"
     (let [trans (xform/translation 2 3 4)
@@ -106,7 +106,7 @@
           compound-op (matrix/mat-mul rot trans scale)
           s (apply-transform (sphere) scale trans rot)]
       (is (matrix/mat-eq? (matrix/inverse compound-op)
-                          (inverse-transform s))))))
+                          (:inverse-transform s))))))
 
 (deftest sphere-normal-test
   (testing "A normal of a sphere on the x-axis"
@@ -152,5 +152,5 @@
 (deftest sphere-material-test
   (testing "A sphere's material can be changed"
     (let [m (material/assoc-ambient (material/material) 1)
-          s (assoc-material (sphere) m)]
-      (is (material/material-eq? m (material s))))))
+          s (assoc (sphere) :material m)]
+      (is (material/material-eq? m (:material s))))))
