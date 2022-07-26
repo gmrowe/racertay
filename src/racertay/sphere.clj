@@ -29,7 +29,7 @@
         c (dec (tup/dot sphere-to-ray-vec sphere-to-ray-vec))
         discriminant (- (* b b) (* 4 a c))]
     (if (neg? discriminant)
-      (inter/intersections)
+      inter/empty-intersections
       (inter/intersections
        (inter/intersection (/ (- (- b) (Math/sqrt discriminant)) (* a 2)) sphere)
        (inter/intersection (/ (+ (- b) (Math/sqrt discriminant)) (* a 2)) sphere)))))

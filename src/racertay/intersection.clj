@@ -11,6 +11,7 @@
   (:object inter))
 
 (def intersections vector)
+(def empty-intersections (intersections))
 
 (defn hit [inters]
   (when-let [hits (seq (filter #(pos? (t %)) inters))]
