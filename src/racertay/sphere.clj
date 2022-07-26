@@ -11,9 +11,6 @@
    :inverse-transform matrix/identity-matrix
    :material (material/material)})
 
-#_(defn assoc-material [sphere material]
-  (assoc sphere :material material))
-
 (defn apply-transform
   ([sphere xform]
    (let [updated (update sphere :transform (partial matrix/mat-mul xform))]
