@@ -13,7 +13,7 @@
 (def default-light (light/point-light (tup/point -10 10 -10) (color/color 1 1 1)))
 
 (def sphere-1
-  (let [material (-> (material/material)
+  (let [material (-> material/new-material
                      (assoc :color (color/color 0.8 1.0 0.6))
                      (assoc :diffuse 0.7)
                      (assoc :specular 0.2))]

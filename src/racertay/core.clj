@@ -66,7 +66,7 @@
         sphere-color (color 1 1 0)
         scale (scaling 1.3 0.3 1)
         rot (rotation-z (/ Math/PI 6))
-        m (material/assoc-color (material/material) sphere-color)
+        m (assoc material/new-material :material/color sphere-color)
         s (-> (sphere/sphere)
               (assoc :material m)
               (sphere/apply-transform scale rot))

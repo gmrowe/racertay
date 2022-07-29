@@ -9,7 +9,7 @@
   {:id (java.util.UUID/randomUUID)
    :transform matrix/identity-matrix
    :inverse-transform matrix/identity-matrix
-   :material (material/material)})
+   :material material/new-material})
 
 (defn apply-transform
   ([sphere xform]
