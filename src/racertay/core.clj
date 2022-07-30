@@ -9,7 +9,8 @@
             [racertay.ray :as ray]
             [racertay.intersection :as intersect]
             [racertay.material :as material]
-            [racertay.light :as light])
+            [racertay.light :as light]
+            [racertay.protocols :as p])
   (:gen-class))
 
 (defn clock-face [clock-radius]
@@ -55,7 +56,7 @@
                   wall-position (point world-x world-y wall-z)
                   ray-direction (normalize (tup-sub wall-position ray-source))
                   r (ray/ray ray-source ray-direction)
-                  xs (sphere/intersect s r)]
+                  xs (p/intersect s r)]
               (if (intersect/hit xs)
                 (write-pixel canvas x y sphere-color)
                 canvas)))]
@@ -84,10 +85,10 @@
                   wall-position (point world-x world-y wall-z)
                   ray-direction (normalize (tup-sub wall-position ray-source))
                   r (ray/ray ray-source ray-direction)
-                  xs (sphere/intersect s r)]
+                  xs (p/intersect s r)]
               (if-let [i (intersect/hit xs)]
                 (let [point (ray/position r (intersect/t i))
-                      normal (sphere/normal-at (intersect/object i) point)
+                      normal (p/normal-at (intersect/object i) point)
                       eye (tup-neg (ray/direction r))
                       material (:material (intersect/object i))
                       color (material/lighting material light point eye normal)]

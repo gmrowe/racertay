@@ -1,8 +1,11 @@
 (ns racertay.intersection-test
   (:require [clojure.test :refer :all]
+            [racertay.intersection :refer :all]
             [racertay.sphere :as sphere]
             [racertay.fcmp :as fcmp]
-            [racertay.intersection :refer :all]))
+            [racertay.ray :as ray]
+            [racertay.tuple :as tup]
+            [racertay.protocols :as p]))
 
 (deftest intersection-creation-test
   (testing "An intersection encapsulates a t an an object"
@@ -55,3 +58,14 @@
           xs (intersections i1 i2 i3 i4)
           i (hit xs)]
       (is (= i4 i)))))
+
+(deftest prepare-computations-test
+  (let [r (ray/ray (tup/point 0 0 -5) (tup/vect 0 0 1))
+        shape (sphere/sphere)
+        i (intersection 4 shape)
+        comps (prepare-computations i r)]
+    (is (fcmp/nearly-eq? (:t i) (:t comps)))
+    (is (= (:object i) (:object comps)))
+    (is (tup/tup-eq? (tup/point 0 0 -1) (:point comps)))
+    (is (tup/tup-eq? (tup/vect 0 0 -1) (:normalv comps)))
+    (is (tup/tup-eq? (tup/vect 0 0 -1) (:eyev comps)))))
