@@ -42,8 +42,8 @@
        (tup/vect (tup/x world-normal) (tup/y world-normal) (tup/z world-normal))))))
 
 (defn sphere []
-  (->ISphere
-   (java.util.UUID/randomUUID)
-   matrix/identity-matrix
-   matrix/identity-matrix
-   material/new-material))
+  (map->ISphere
+   {:id (java.util.UUID/randomUUID)
+    :transform matrix/identity-matrix
+    :inverse-transform matrix/identity-matrix
+    :material material/new-material}))
