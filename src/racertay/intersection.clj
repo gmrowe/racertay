@@ -21,7 +21,7 @@
     (apply min-key t hits)))
 
 (defn prepare-computations [inters ray]
-  (let [point (ray/position ray (:t inters))] ()
+  (let [point (ray/position ray (:t inters))]
     (merge inters
            {:point point
             :eyev (tup/tup-neg (:direction ray))

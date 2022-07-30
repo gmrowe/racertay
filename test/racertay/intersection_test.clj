@@ -60,12 +60,13 @@
       (is (= i4 i)))))
 
 (deftest prepare-computations-test
-  (let [r (ray/ray (tup/point 0 0 -5) (tup/vect 0 0 1))
-        shape (sphere/sphere)
-        i (intersection 4 shape)
-        comps (prepare-computations i r)]
-    (is (fcmp/nearly-eq? (:t i) (:t comps)))
-    (is (= (:object i) (:object comps)))
-    (is (tup/tup-eq? (tup/point 0 0 -1) (:point comps)))
-    (is (tup/tup-eq? (tup/vect 0 0 -1) (:normalv comps)))
-    (is (tup/tup-eq? (tup/vect 0 0 -1) (:eyev comps)))))
+  (testing "The state of an intersection is precomputed"
+    (let [r (ray/ray (tup/point 0 0 -5) (tup/vect 0 0 1))
+          shape (sphere/sphere)
+          i (intersection 4 shape)
+          comps (prepare-computations i r)]
+      (is (fcmp/nearly-eq? (:t i) (:t comps)))
+      (is (= (:object i) (:object comps)))
+      (is (tup/tup-eq? (tup/point 0 0 -1) (:point comps)))
+      (is (tup/tup-eq? (tup/vect 0 0 -1) (:normalv comps)))
+      (is (tup/tup-eq? (tup/vect 0 0 -1) (:eyev comps))))))
