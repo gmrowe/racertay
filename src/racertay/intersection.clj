@@ -7,18 +7,12 @@
   #:intersection{:t t
                  :object obj})
 
-(defn t [inter]
-  (:intersection/t inter))
-
-(defn object [inter]
-  (:intersection/object inter))
-
 (def intersections vector)
 (def empty-intersections (intersections))
 
 (defn hit [inters]
-  (when-let [hits (seq (filter #(pos? (t %)) inters))]
-    (apply min-key t hits)))
+  (when-let [hits (seq (filter #(pos? (:intersection/t %)) inters))]
+    (apply min-key :intersection/t hits)))
 
 (defn prepare-computations [inters ray]
   (let [point (ray/position ray (:intersection/t inters))

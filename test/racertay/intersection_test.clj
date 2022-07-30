@@ -11,8 +11,8 @@
   (testing "An intersection encapsulates a t an an object"
     (let [s (sphere/sphere)
           i (intersection 3.5 s)]
-      (is (fcmp/nearly-eq? 3.5 (t i)))
-      (is (= s (object i))))))
+      (is (fcmp/nearly-eq? 3.5 (:intersection/t i)))
+      (is (= s (:intersection/object i))))))
 
 (deftest intersection-aggregation-test
   (testing "Intersections should be able to be aggregated"
@@ -21,8 +21,8 @@
           i2 (intersection 2 s)
           xs (intersections i1 i2)]
       (is (= 2 (count xs)))
-      (is (fcmp/nearly-eq? 1 (t (nth xs 0))))
-      (is (fcmp/nearly-eq? 2 (t (nth xs 1)))))))
+      (is (fcmp/nearly-eq? 1 (:intersection/t (nth xs 0))))
+      (is (fcmp/nearly-eq? 2 (:intersection/t (nth xs 1)))))))
 
 (deftest intersection-hit-test
   (testing "The hit when all intersections have positive t"

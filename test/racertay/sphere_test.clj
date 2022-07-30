@@ -27,16 +27,16 @@
           s (sphere)
           xs (p/intersect s r)]
       (is (= 2 (count xs)))
-      (is (fcmp/nearly-eq? 4.0 (inter/t (nth xs 0))))
-      (is (fcmp/nearly-eq? 6.0 (inter/t (nth xs 1))))))
+      (is (fcmp/nearly-eq? 4.0 (:intersection/t (nth xs 0))))
+      (is (fcmp/nearly-eq? 6.0 (:intersection/t (nth xs 1))))))
 
   (testing "A ray which intersects a sphere at a tangent"
     (let [r (ray/ray (tup/point 0 1 -5) (tup/vect 0 0 1))
           s (sphere)
           xs (p/intersect s r)]
       (is (= 2 (count xs)))
-      (is (fcmp/nearly-eq? 5.0 (inter/t (nth xs 0))))
-      (is (fcmp/nearly-eq? 5.0 (inter/t (nth xs 1))))))
+      (is (fcmp/nearly-eq? 5.0 (:intersection/t (nth xs 0))))
+      (is (fcmp/nearly-eq? 5.0 (:intersection/t (nth xs 1))))))
 
   (testing "A ray which misses a sphere"
     (let [r (ray/ray (tup/point 0 2 -5) (tup/vect 0 0 1))
@@ -49,32 +49,32 @@
           s (sphere)
           xs (p/intersect s r)]
       (is (= 2 (count xs)))
-      (is (fcmp/nearly-eq? -1.0 (inter/t (nth xs 0))))
-      (is (fcmp/nearly-eq? 1.0 (inter/t (nth xs 1))))))
+      (is (fcmp/nearly-eq? -1.0 (:intersection/t (nth xs 0))))
+      (is (fcmp/nearly-eq? 1.0 (:intersection/t (nth xs 1))))))
 
   (testing "A sphere that is completly behind a ray"
     (let [r (ray/ray (tup/point 0 0 5) (tup/vect 0 0 1))
           s (sphere)
           xs (p/intersect s r)]
       (is (= 2 (count xs)))
-      (is (fcmp/nearly-eq? -6.0 (inter/t (nth xs 0))))
-      (is (fcmp/nearly-eq? -4.0 (inter/t (nth xs 1))))))
+      (is (fcmp/nearly-eq? -6.0 (:intersection/t (nth xs 0))))
+      (is (fcmp/nearly-eq? -4.0 (:intersection/t (nth xs 1))))))
 
   (testing "intersect sets the object on the intersecton"
     (let [r (ray/ray (tup/point 0 0 -5) (tup/vect 0 0 1))
           s (sphere)
           xs (p/intersect s r)]
       (is (= 2 (count xs)))
-      (is (= s (inter/object (nth xs 0))))
-      (is (= s (inter/object (nth xs 1))))))
+      (is (= s (:intersection/object (nth xs 0))))
+      (is (= s (:intersection/object (nth xs 1))))))
 
   (testing "Intersecting a scaled sphere with a ray"
     (let [r (ray/ray (tup/point 0 0 -5) (tup/vect 0 0 1))
           s (apply-transform (sphere) (xform/scaling 2 2 2))
           xs (p/intersect s r)]
       (is (= 2 (count xs)))
-      (is (fcmp/nearly-eq? 3 (inter/t (nth xs 0))))
-      (is (fcmp/nearly-eq? 7 (inter/t (nth xs 1))))))
+      (is (fcmp/nearly-eq? 3 (:intersection/t (nth xs 0))))
+      (is (fcmp/nearly-eq? 7 (:intersection/t (nth xs 1))))))
 
   (testing "Intersecting a translated sphere with a ray"
     (let [r (ray/ray (tup/point 0 0 -5) (tup/vect 0 0 1))
