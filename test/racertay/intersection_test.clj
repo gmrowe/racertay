@@ -65,25 +65,25 @@
           shape (sphere/sphere)
           i (intersection 4 shape)
           comps (prepare-computations i r)]
-      (is (fcmp/nearly-eq? (:t i) (:t comps)))
-      (is (= (:object i) (:object comps)))
-      (is (tup/tup-eq? (tup/point 0 0 -1) (:point comps)))
-      (is (tup/tup-eq? (tup/vect 0 0 -1) (:normalv comps)))
-      (is (tup/tup-eq? (tup/vect 0 0 -1) (:eyev comps)))))
+      (is (fcmp/nearly-eq? (:intersection/t i) (:intersection/t comps)))
+      (is (= (:intersection/object i) (:intersection/object comps)))
+      (is (tup/tup-eq? (tup/point 0 0 -1) (:intersection/point comps)))
+      (is (tup/tup-eq? (tup/vect 0 0 -1) (:intersection/normalv comps)))
+      (is (tup/tup-eq? (tup/vect 0 0 -1) (:intersection/eyev comps)))))
 
   (testing "The :inside attribute is false when intersection occurs outside"
     (let [r (ray/ray (tup/point 0 0 -5) (tup/vect 0 0 1))
           shape (sphere/sphere)
           i (intersection 4 shape)
           comps (prepare-computations i r)]
-      (is (false? (:inside comps)))))
+      (is (false? (:intersection/inside comps)))))
 
   (testing "The :inside attribute is true when intersection occurs inside"
     (let [r (ray/ray (tup/point 0 0 0) (tup/vect 0 0 1))
           shape (sphere/sphere)
           i (intersection 1 shape)
           comps (prepare-computations i r)]
-      (is (tup/tup-eq? (tup/point 0 0 1) (:point comps)))
-      (is (tup/tup-eq? (tup/vect 0 0 -1) (:eyev comps)))
-      (is (true? (:inside comps)))
-      (is (tup/tup-eq? (tup/vect 0 0 -1) (:normalv comps))))))
+      (is (tup/tup-eq? (tup/point 0 0 1) (:intersection/point comps)))
+      (is (tup/tup-eq? (tup/vect 0 0 -1) (:intersection/eyev comps)))
+      (is (true? (:intersection/inside comps)))
+      (is (tup/tup-eq? (tup/vect 0 0 -1) (:intersection/normalv comps))))))

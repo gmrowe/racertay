@@ -50,7 +50,7 @@
     (let [ray (ray/ray (tup/point 0 0 -5) (tup/vect 0 0 1))
           xs (intersect-world default-world ray)]
       (is (= 4 (count xs)))
-      (is (fcmp/nearly-eq? 4 (:t (nth xs 0))))
-      (is (fcmp/nearly-eq? 4.5 (:t (nth xs 1))))
-      (is (fcmp/nearly-eq? 5.5 (:t (nth xs 2))))
-      (is (fcmp/nearly-eq? 6 (:t (nth xs 3)))))))
+      (is (fcmp/nearly-eq? 4 (:intersection/t (nth xs 0))))
+      (is (fcmp/nearly-eq? 4.5 (:intersection/t (nth xs 1))))
+      (is (fcmp/nearly-eq? 5.5 (:intersection/t (nth xs 2))))
+      (is (fcmp/nearly-eq? 6 (:intersection/t (nth xs 3)))))))

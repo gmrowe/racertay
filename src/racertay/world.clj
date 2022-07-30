@@ -7,4 +7,4 @@
    :objects []})
 
 (defn intersect-world [world ray]
-  (sort-by :t (mapcat #(p/intersect % ray) (:objects world))))
+  (sort-by :intersection/t (mapcat #(p/intersect % ray) (:objects world))))
