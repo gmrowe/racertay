@@ -21,8 +21,12 @@
     (apply min-key t hits)))
 
 (defn prepare-computations [inters ray]
-  (let [point (ray/position ray (:t inters))]
+  (let [point (ray/position ray (:t inters))
+        normalv (p/normal-at (:object inters) point)
+        eyev (tup/tup-neg (:direction ray))
+        normalv-dot-eyev (tup/dot normalv eyev)]
     (merge inters
            {:point point
-            :eyev (tup/tup-neg (:direction ray))
-            :normalv (p/normal-at (:object inters) point)})))
+            :eyev eyev
+            :normalv (if (neg? normalv-dot-eyev) (tup/tup-neg normalv) normalv)
+            :inside (neg? normalv-dot-eyev)})))
