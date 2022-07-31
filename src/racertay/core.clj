@@ -89,7 +89,7 @@
               (if-let [i (intersect/hit xs)]
                 (let [point (ray/position r (:intersection/t i))
                       normal (p/normal-at (:intersection/object i) point)
-                      eye (tup-neg (ray/direction r))
+                      eye (tup-neg (:ray/direction r))
                       material (:material (:intersection/object i))
                       color (material/lighting material light point eye normal)]
                   (write-pixel canvas x y color))

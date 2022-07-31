@@ -9,8 +9,8 @@
     (let [ori (tup/point 1 2 3)
           dir (tup/vect 4 5 6)
           r (ray ori dir)]
-      (is (tup/tup-eq? ori (origin r)))
-      (is (tup/tup-eq? dir (direction r))))))
+      (is (tup/tup-eq? ori (:ray/origin r)))
+      (is (tup/tup-eq? dir (:ray/direction r))))))
 
 (deftest ray-casting-test
   (testing "A position can computed from a ray and distance (t)"
@@ -25,12 +25,12 @@
     (let [r (ray (tup/point 1 2 3) (tup/vect 0 1 0))
           m (xforms/translation 3 4 5)
           r2 (transform r m)]
-      (is (tup/tup-eq? (tup/point 4 6 8) (origin r2)))
-      (is (tup/tup-eq? (tup/vect 0 1 0) (direction r2)))))
+      (is (tup/tup-eq? (tup/point 4 6 8) (:ray/origin r2)))
+      (is (tup/tup-eq? (tup/vect 0 1 0) (:ray/direction r2)))))
 
   (testing "A ray can be scaled"
     (let [r (ray (tup/point 1 2 3) (tup/vect 0 1 0))
           m (xforms/scaling 2 3 4)
           r2 (transform r m)]
-      (is (tup/tup-eq? (tup/point 2 6 12) (origin r2)))
-      (is (tup/tup-eq? (tup/vect 0 3 0) (direction r2))))))
+      (is (tup/tup-eq? (tup/point 2 6 12) (:ray/origin r2)))
+      (is (tup/tup-eq? (tup/vect 0 3 0) (:ray/direction r2))))))
