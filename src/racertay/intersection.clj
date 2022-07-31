@@ -17,7 +17,7 @@
 (defn prepare-computations [inters ray]
   (let [point (ray/position ray (:intersection/t inters))
         normalv (p/normal-at (:intersection/object inters) point)
-        eyev (tup/tup-neg (:direction ray))
+        eyev (tup/tup-neg (:ray/direction ray))
         normalv-dot-eyev (tup/dot normalv eyev)]
     (merge inters
            #:intersection{:point point

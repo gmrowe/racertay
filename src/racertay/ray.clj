@@ -3,14 +3,14 @@
             [racertay.matrix :as matrix]))
 
 (defn ray [origin-pt direction-vec]
-  {:origin origin-pt
-   :direction direction-vec})
+  #:ray{:origin origin-pt
+        :direction direction-vec})
 
 (defn origin [r]
-  (:origin r))
+  (:ray/origin r))
 
 (defn direction [r]
-  (:direction r))
+  (:ray/direction r))
 
 (defn distance [r t]
   (tup/tup-mul-scalar (direction r) t))

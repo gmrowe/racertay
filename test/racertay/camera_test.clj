@@ -34,14 +34,14 @@
   (testing "Constructing a ray through the center of the canvas"
     (let [c (camera 201 101 (/ Math/PI 2))
           r (ray-for-pixel c 100 50)]
-      (is (tup/tup-eq? (tup/point 0 0 0) (:origin r)))
-      (is (tup/tup-eq? (tup/vect 0 0 -1) (:direction r)))))
+      (is (tup/tup-eq? (tup/point 0 0 0) (:ray/origin r)))
+      (is (tup/tup-eq? (tup/vect 0 0 -1) (:ray/direction r)))))
 
   (testing "Construing a ray through the corner of the canvas"
     (let [c (camera 201 101 (/ Math/PI 2))
           r (ray-for-pixel c 0 0)]
-      (is (tup/tup-eq? (tup/point 0 0 0) (:origin r)))
-      (is (tup/tup-eq? (tup/vect 0.66519 0.33259 -0.66851) (:direction r)))))
+      (is (tup/tup-eq? (tup/point 0 0 0) (:ray/origin r)))
+      (is (tup/tup-eq? (tup/vect 0.66519 0.33259 -0.66851) (:ray/direction r)))))
 
   (testing "Constructing a ray when the camera is transformed"
     (let [transform (mat/mat-mul (xform/rotation-y (/ Math/PI 4))
@@ -49,9 +49,9 @@
           c (apply-transform (camera 201 101 (/ Math/PI 2)) transform)
           r (ray-for-pixel c 100 50)
           rad-2-over-2 (/ (Math/sqrt 2) 2)]
-      (is (tup/tup-eq? (tup/point 0 2 -5) (:origin r)))
+      (is (tup/tup-eq? (tup/point 0 2 -5) (:ray/origin r)))
       (is (tup/tup-eq? (tup/vect rad-2-over-2 0 (- rad-2-over-2))
-                       (:direction r))))))
+                       (:ray/direction r))))))
 
 (deftest render-test
   (testing "The a world can be rendered with a camera"
@@ -64,12 +64,3 @@
       (is (col/color-eq? (col/color 0.38066 0.47583 0.2855)
                          (can/pixel-at image 5 5))))))
 
-(let [from (tup/point 0 0 -5)
-      to (tup/point 0 0 0)
-      up (tup/vect 0 1 0)
-      transform (xform/view-transform from to up)
-      camera (camera 11 11 (/ Math/PI 2))
-      c (apply-transform camera transform)]
-  (let [camera c
-        world wt/default-world]
-    world))
