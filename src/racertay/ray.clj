@@ -6,12 +6,6 @@
   #:ray{:origin origin-pt
         :direction direction-vec})
 
-#_(defn origin [r]
-  (:ray/origin r))
-
-#_(defn direction [r]
-  (:ray/direction r))
-
 (defn distance [r t]
   (tup/tup-mul-scalar (:ray/direction r) t))
 
