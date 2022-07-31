@@ -33,7 +33,9 @@
   (tuple x y z 0.0))
 
 (defn tup-eq? [t1 t2]
-  (every? identity (map nearly-eq? t1 t2)))
+  (and
+   (= (count t1) (count t2))
+   (every? identity (map nearly-eq? t1 t2))))
 
 (defn tup-add
   ([t1] t1)

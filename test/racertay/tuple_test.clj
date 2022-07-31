@@ -30,6 +30,17 @@
     (testing "a tuple with w = 1.0 is not a vect"
       (is (not (vect? t))))))
 
+(deftest tup-eq?-test
+  (testing "Identical tuples are equal"
+    (is (tup-eq? (point 1 2 3) (point 1 2 3))))
+
+  (testing "A point and a vec are not equal"
+    (is (not (tup-eq? (point 1 2 3) (vect 1 2 3)))))
+
+  (testing "Bugfix!! a tuple is not equal to an empty vec"
+    (is (not (tup-eq? (point 1 2 3) [])))))
+
+
 (deftest point-test
   (testing "a point creates a tuple with w=1.0"
     (is (tup-eq? (point 4 -4 3) (tuple 4 -4 3 1)))))
