@@ -47,13 +47,34 @@
         direction (tup/normalize (tup/tup-sub pixel origin))]
     (ray/ray origin direction)))
 
+(defn report-progress [total]
+  (fn [curr]
+    (let [progress (double (* 100 (/ curr total)))]
+      (do
+        (print
+         (str (format "%.0f%% complete" progress) \return))
+        (flush)))))
+
+(defn seq-peek
+  "Calls callback after n entries in s are evaluated."
+  [callback s]
+  (let [n 5
+        call-and-return
+       (fn [iter data]
+         (do (if (zero? (rem iter n))
+               (callback iter))
+             data))]
+    (map call-and-return
+         (iterate inc 1) s)))
+
+(defn write-image-pixel [camera world canvas [x y]]
+  (let [ray (ray-for-pixel camera x y)
+        color (wor/color-at world ray)]
+    (can/write-pixel canvas x y color)))
+
 (defn render [camera world]
   (let [{:camera/keys [hsize vsize]} camera
-        image (can/canvas hsize vsize)
         coords (for [y (range 0 vsize), x (range 0 hsize)] [x y])]
-    (reduce (fn [im [x y]]
-              (let [ray (ray-for-pixel camera x y)
-                    color (wor/color-at world ray)]
-                (can/write-pixel im x y color)))
-            image
-            coords)))
+    (reduce (partial write-image-pixel camera world)
+            (can/canvas hsize vsize)
+            (seq-peek (report-progress (count coords)) coords))))
