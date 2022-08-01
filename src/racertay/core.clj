@@ -88,9 +88,9 @@
       (update :world/objects conj left-sphere)))
 
 (defn write-canvas-to-ppm-file [canvas filename]
-  (let [ppm (canv/canvas-to-p6-ppm canvas)]
+  (let [ppm-bytes (canv/canvas-to-p6-ppm canvas)]
     (with-open [out (io/output-stream filename)]
-      (.write out ppm))))
+      (.write out ppm-bytes))))
 
 (defn -main [& args]
   (let [canvas (cam/render camera world)]
