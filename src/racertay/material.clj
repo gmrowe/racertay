@@ -23,19 +23,19 @@
    (fcmp/nearly-eq? (:material/specular mat1) (:material/specular mat2))
    (fcmp/nearly-eq? (:material/shininess mat1) (:material/shininess mat2))))
 
-(defn- calc-ambient [effective-color material]
-  (color/color-mul-scalar effective-color (:material/ambient material)))
+(defn- calc-ambient [effective-color ambient]
+  (color/color-mul-scalar effective-color ambient))
 
 (defn- calc-diffuse
-  [light-dot-normal effective-color diffuse]
-  (if (neg? light-dot-normal)
+  [light-dot-normal effective-color diffuse in-shadow]
+  (if (or in-shadow (neg? light-dot-normal))
     (color/color 0 0 0)
     (color/color-mul-scalar
      effective-color (* diffuse light-dot-normal))))
 
 (defn- calc-specular
-  [light-dot-normal normalv lightv eyev light specular shininess]
-  (if (neg? light-dot-normal)
+  [light-dot-normal normalv lightv eyev light specular shininess in-shadow]
+  (if (or in-shadow (neg? light-dot-normal))
     (color/color 0 0 0)
     (let [reflectv (tup/reflect (tup/tup-neg lightv) normalv)
           reflect-dot-eye (tup/dot reflectv eyev)]
@@ -46,14 +46,14 @@
         (color/color 0 0 0)))))
 
 (defn lighting
-  [material light point eyev normalv]
-  (let [effective-color (color/color-mul
-                         (:material/color material) (light/intensity light))
+  [material light point eyev normalv in-shadow]
+  (let [{:material/keys [color diffuse specular shininess ambient]} material
+        effective-color (color/color-mul color (light/intensity light))
         lightv (tup/normalize (tup/tup-sub (light/position light) point))
         light-dot-normal (tup/dot lightv normalv)]
     (color/color-add
-     (calc-ambient effective-color material)
-     (calc-diffuse light-dot-normal effective-color (:material/diffuse material))
+     (calc-ambient effective-color ambient)
+     (calc-diffuse
+      light-dot-normal effective-color diffuse in-shadow)
      (calc-specular
-      light-dot-normal normalv lightv eyev light
-      (:material/specular material) (:material/shininess material)))))
+      light-dot-normal normalv lightv eyev light specular shininess in-shadow))))

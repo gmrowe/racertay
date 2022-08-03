@@ -20,7 +20,8 @@
      (:world/light world)
      (:intersection/point comps)
      (:intersection/eyev comps)
-     (:intersection/normalv comps))))
+     (:intersection/normalv comps)
+     false)))
 
 (defn color-at [world ray]
   (if-let [hit (intersection/hit (intersect-world world ray))]
