@@ -92,3 +92,16 @@
           r (ray/ray (tup/point 0 0 0.75) (tup/vect 0 0 -1))]
       (is (color/color-eq? (get-in w [:world/objects 1 :material :material/color])
                            (color-at w r))))))
+
+(deftest shadowed?-test
+  (testing "There is no shadow when nothing is colinear with point and light"
+    (is (not (shadowed? default-world (tup/point 0 10 0)))))
+
+  (testing "The shadow when there is an object between point and light"
+    (is (shadowed? default-world (tup/point 10 -10 10))))
+
+  (testing "There is no shadow when object is behind the light"
+    (is (not (shadowed? default-world (tup/point -20 20 -20)))))
+
+  (testing "There is no shadow when object is behind the point"
+    (is (not (shadowed? default-world (tup/point -2 2 -2))))))
