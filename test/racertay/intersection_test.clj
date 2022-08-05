@@ -88,12 +88,23 @@
       (is (true? (:intersection/inside comps)))
       (is (tup/tup-eq? (tup/vect 0 0 -1) (:intersection/normalv comps)))))
 
-  (testing "The hit should offset the point"
+  (testing "The :over-point attribute should offset the hit"
     (let [r (ray/ray (tup/point 0 0 -5) (tup/vect 0 0 1))
           shape (-> (sphere/sphere)
                     (sphere/apply-transform (xform/translation 0 0 1)))
           i (intersection 5 shape)
           comps (prepare-computations i r)]
       (is (< (tup/z (:intersection/over-point comps)) (/ fcmp/epsilon 2)))
+      (is (< (tup/z (:intersection/over-point comps))
+             (tup/z (:intersection/point comps))))))
+
+  (testing "When the intersection occurs inside :over-point shold be inside"
+    (let [r (ray/ray (tup/point 0 0 0) (tup/vect 0 0 1))
+          shape (sphere/sphere)
+          i (intersection 1 shape)
+          comps (prepare-computations i r)
+          diff-z (- (tup/z (:intersection/over-point comps))
+                    (tup/z (:intersection/point comps)))]
+      (is (< diff-z (- (/ fcmp/epsilon 2))))
       (is (< (tup/z (:intersection/over-point comps))
              (tup/z (:intersection/point comps)))))))
