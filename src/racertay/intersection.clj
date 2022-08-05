@@ -1,6 +1,7 @@
 (ns racertay.intersection
   (:require [racertay.ray :as ray]
             [racertay.tuple :as tup]
+            [racertay.fcmp :as fcmp]
             [racertay.protocols :as p]))
 
 (defn intersection [t obj]
@@ -18,11 +19,13 @@
   (let [point (ray/position ray (:intersection/t inters))
         normalv (p/normal-at (:intersection/object inters) point)
         eyev (tup/tup-neg (:ray/direction ray))
-        normalv-dot-eyev (tup/dot normalv eyev)]
+        normalv-dot-eyev (tup/dot normalv eyev)
+        inside (neg? normalv-dot-eyev)
+        over-point (tup/tup-add
+                    point (tup/tup-mul-scalar normalv (/ fcmp/epsilon 2)))]
     (merge inters
            #:intersection{:point point
                           :eyev eyev
-                          :normalv (if (neg? normalv-dot-eyev)
-                                    (tup/tup-neg normalv)
-                                    normalv)
-                          :inside (neg? normalv-dot-eyev)})))
+                          :normalv (if inside (tup/tup-neg normalv) normalv)
+                          :inside inside
+                          :over-point over-point})))

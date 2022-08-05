@@ -5,7 +5,7 @@
             [racertay.fcmp :as fcmp]
             [racertay.ray :as ray]
             [racertay.tuple :as tup]
-            [racertay.protocols :as p]))
+            [racertay.transformations :as xform]))
 
 (deftest intersection-creation-test
   (testing "An intersection encapsulates a t an an object"
@@ -86,4 +86,14 @@
       (is (tup/tup-eq? (tup/point 0 0 1) (:intersection/point comps)))
       (is (tup/tup-eq? (tup/vect 0 0 -1) (:intersection/eyev comps)))
       (is (true? (:intersection/inside comps)))
-      (is (tup/tup-eq? (tup/vect 0 0 -1) (:intersection/normalv comps))))))
+      (is (tup/tup-eq? (tup/vect 0 0 -1) (:intersection/normalv comps)))))
+
+  (testing "The hit should offset the point"
+    (let [r (ray/ray (tup/point 0 0 -5) (tup/vect 0 0 1))
+          shape (-> (sphere/sphere)
+                    (sphere/apply-transform (xform/translation 0 0 1)))
+          i (intersection 5 shape)
+          comps (prepare-computations i r)]
+      (is (< (tup/z (:intersection/over-point comps)) (/ fcmp/epsilon 2)))
+      (is (< (tup/z (:intersection/over-point comps))
+             (tup/z (:intersection/point comps)))))))
