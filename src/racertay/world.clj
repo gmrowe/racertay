@@ -27,14 +27,14 @@
        (< (:intersection/t hit) distance)))))
 
 (defn shade-hit [world comps]
-  (let [{:intersection/keys [object point eyev normalv]} comps]
+  (let [{:intersection/keys [object point eyev normalv over-point]} comps]
     (material/lighting
      (:material object)
      (:world/light world)
      point
      eyev
      normalv
-     (shadowed? world point))))
+     (shadowed? world over-point))))
 
 (defn color-at [world ray]
   (if-let [hit (intersection/hit (intersect-world world ray))]
