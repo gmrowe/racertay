@@ -73,7 +73,22 @@
           i (intersection/intersection 0.5 shape)
           comps (intersection/prepare-computations i ray)
           c (shade-hit w comps)]
-      (is (color/color-eq? (color/color 0.90498 0.90498 0.90498) c)))))
+      (is (color/color-eq? (color/color 0.90498 0.90498 0.90498) c))))
+
+  (testing "Shade hit can handle a point that is in shadow"
+    (let [s1 (sphere/sphere)
+          s2 (sphere/apply-transform (sphere/sphere) (xform/translation 0 0 10))
+          w (-> empty-world
+                (assoc :world/light
+                       (light/point-light
+                        (tup/point 0 0 -10) (color/color 1 1 1)))
+                (update :world/objects conj s1)
+                (update :world/objects conj s2))
+          r (ray/ray (tup/point 0 0 5) (tup/vect 0 0 1))
+          i (intersection/intersection 4 s2)
+          comps (intersection/prepare-computations i r)
+          c (shade-hit w comps)]
+      (is (color/color-eq? (color/color 0.1 0.1 0.1) c)))))
 
 (deftest color-at-test
   (testing "The color when a ray misses is black"

@@ -16,20 +16,6 @@
   (sort-by :intersection/t
            (mapcat #(p/intersect % ray) (:world/objects world))))
 
-(defn shade-hit [world comps]
-  (let [material (:material (:intersection/object comps))]
-    (material/lighting
-     (:material (:intersection/object comps))
-     (:world/light world)
-     (:intersection/point comps)
-     (:intersection/eyev comps)
-     (:intersection/normalv comps)
-     false)))
-
-(defn color-at [world ray]
-  (if-let [hit (intersection/hit (intersect-world world ray))]
-    (shade-hit world (intersection/prepare-computations hit ray))
-    (color/color 0 0 0)))
 
 (defn shadowed? [world point]
   (let [{:world/keys [light objects]} world
@@ -39,3 +25,19 @@
     (boolean
      (when-let [hit (intersection/hit (intersect-world world ray))]
        (< (:intersection/t hit) distance)))))
+
+(defn shade-hit [world comps]
+  (let [{:intersection/keys [object point eyev normalv]} comps]
+    (material/lighting
+     (:material object)
+     (:world/light world)
+     point
+     eyev
+     normalv
+     (shadowed? world point))))
+
+(defn color-at [world ray]
+  (if-let [hit (intersection/hit (intersect-world world ray))]
+    (shade-hit world (intersection/prepare-computations hit ray))
+    (color/color 0 0 0)))
+
