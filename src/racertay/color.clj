@@ -35,12 +35,13 @@
 
 (defn color-sub
   ([c]
-   (let [black (color 0 0 0)]
-     (color-sub black c)))
+   (color-sub black c))
+  
   ([c1 c2]
    (color (- (:red c1) (:red c2))
           (- (:green c1) (:green c2))
           (- (:blue c1) (:blue c2))))
+  
   ([c1 c2 & more]
    (reduce color-sub c1 (cons c2 more))))
 

@@ -8,7 +8,7 @@
 
 (deftest material-creation-test
   (testing "Material has a default color"
-    (is (color/color-eq? (color/color 1 1 1) (:material/color new-material))))
+    (is (color/color-eq? color/white (:material/color new-material))))
 
   (testing "Material has default ambient attribute"
     (is (fcmp/nearly-eq? 0.1 (:material/ambient new-material))))
@@ -63,7 +63,7 @@
     (testing "Lighting with the eye between the light and the surface"
       (let [eyev (tup/vect 0 0 -1)
             normalv (tup/vect 0 0 -1)
-            light (light/point-light (tup/point 0 0 -10) (color/color 1 1 1))
+            light (light/point-light (tup/point 0 0 -10) color/white)
             in-shadow false]
         (is (color/color-eq?
              (color/color 1.9 1.9 1.9)
@@ -73,16 +73,16 @@
       (let [rad-2-over-2 (/ (Math/sqrt 2) 2)
             eyev (tup/vect 0 rad-2-over-2 (- rad-2-over-2))
             normalv (tup/vect 0 0 -1)
-            light (light/point-light (tup/point 0 0 -10) (color/color 1 1 1))
+            light (light/point-light (tup/point 0 0 -10) color/white)
             in-shadow false]
         (is (color/color-eq?
-             (color/color 1 1 1)
+             color/white
              (lighting m light surface-pos eyev normalv in-shadow)))))
 
     (testing "Lighting with eye opposite surface - light offset 45 deg"
       (let [eyev (tup/vect 0 0 -1)
             normalv (tup/vect 0 0 -1)
-            light (light/point-light (tup/point 0 10 -10) (color/color 1 1 1))
+            light (light/point-light (tup/point 0 10 -10) color/white)
             in-shadow false]
         (is (color/color-eq?
              (color/color 0.7364 0.7364 0.7364)
@@ -92,7 +92,7 @@
       (let [rad-2-over-2 (/ (Math/sqrt 2) 2)
             eyev (tup/vect 0 (- rad-2-over-2) (- rad-2-over-2))
             normalv (tup/vect 0 0 -1)
-            light (light/point-light (tup/point 0 10 -10) (color/color 1 1 1))
+            light (light/point-light (tup/point 0 10 -10) color/white)
             in-shadow false]
         (is (color/color-eq?
              (color/color 1.6364 1.6364 1.6364)
@@ -101,7 +101,7 @@
     (testing "Lighting with light behind surface"
       (let [eyev (tup/vect 0 0 -1)
             normalv (tup/vect 0 0 -1)
-            light (light/point-light (tup/point 0 0 10) (color/color 1 1 1))
+            light (light/point-light (tup/point 0 0 10) color/white)
             in-shadow false]
         (is (color/color-eq?
              (color/color 0.1 0.1 0.1)
@@ -110,7 +110,7 @@
     (testing "Lighting when a surface is in shadow"
       (let [eyev (tup/vect 0 0 -1)
             normalv (tup/vect 0 0 -1)
-            light (light/point-light (tup/point 0 0 -10) (color/color 1 1 1))
+            light (light/point-light (tup/point 0 0 -10) color/white)
             in-shadow true]
         (is (color/color-eq? (color/color 0.1 0.1 0.1)
                              (lighting m light surface-pos eyev normalv in-shadow)))))))

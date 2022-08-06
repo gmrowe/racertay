@@ -39,5 +39,5 @@
 (defn color-at [world ray]
   (if-let [hit (intersection/hit (intersect-world world ray))]
     (shade-hit world (intersection/prepare-computations hit ray))
-    (color/color 0 0 0)))
+    color/black))
 

@@ -11,7 +11,7 @@
             [racertay.fcmp :as fcmp]
             [racertay.intersection :as intersection]))
 
-(def default-light (light/point-light (tup/point -10 10 -10) (color/color 1 1 1)))
+(def default-light (light/point-light (tup/point -10 10 -10) color/white))
 
 (def sphere-1
   (let [material (-> material/new-material
@@ -66,7 +66,7 @@
       (is (color/color-eq? (color/color 0.38066 0.47583 0.2855) c))))
 
   (testing "An intersection on the inside can be shaded"
-    (let [light (light/point-light (tup/point 0 0.25 0) (color/color 1 1 1))
+    (let [light (light/point-light (tup/point 0 0.25 0) color/white)
           w (assoc default-world :world/light light)
           ray (ray/ray (tup/point 0 0 0) (tup/vect 0 0 1))
           shape (nth (:world/objects w) 1)
@@ -81,7 +81,7 @@
           w (-> empty-world
                 (assoc :world/light
                        (light/point-light
-                        (tup/point 0 0 -10) (color/color 1 1 1)))
+                        (tup/point 0 0 -10) color/white))
                 (update :world/objects conj s1)
                 (update :world/objects conj s2))
           r (ray/ray (tup/point 0 0 5) (tup/vect 0 0 1))

@@ -63,7 +63,7 @@
 
 (def light
   (light/point-light
-   (tup/point -10 10 -10) (col/color 1 1 1)))
+   (tup/point -10 10 -10) col/white))
 
 (def width 1000)
 (def height 670)

@@ -2,7 +2,7 @@
   (:require [clojure.test :refer :all]
             [clojure.string :as s]
             [racertay.canvas :refer :all]
-            [racertay.color :refer [color color-eq?]]))
+            [racertay.color :refer [color color-eq? black]]))
 
 (deftest canvas-creation-test
   (testing "a canvas has a width and a height"
@@ -12,8 +12,7 @@
 
   (testing "all pixels of a canvas are initially black"
     (let [c (canvas 10 20)
-          pixels (:canvas/pixels c)
-          black (color 0 0 0)]
+          pixels (:canvas/pixels c)]
       (is (= 200 (count pixels)))
       (is (every? #(color-eq? black %) pixels))))
 

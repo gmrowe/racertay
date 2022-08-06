@@ -1,9 +1,9 @@
 (ns racertay.canvas
   (:require [clojure.string :as s]
-            [racertay.color :refer [color]]))
+            [racertay.color :refer [color black]]))
 
 (defn canvas
-  ([w h] (canvas w h (color 0 0 0)))
+  ([w h] (canvas w h black))
   ([w h color]
    #:canvas{:width w
             :height h
@@ -14,8 +14,7 @@
 
 (defn write-pixel [canvas x y color]
   (let [{:canvas/keys [width height]} canvas]
-    (if (and (int-in-range? 0 width x)
-             (int-in-range? 0 height y))
+    (if (and (int-in-range? 0 width x) (int-in-range? 0 height y))
       (let [index (+ (* width y) x)]
         (assoc-in canvas [:canvas/pixels index] color))
       canvas)))
