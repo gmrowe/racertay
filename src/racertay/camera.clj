@@ -75,9 +75,12 @@
         color (wor/color-at world ray)]
     (can/write-pixel canvas x y color)))
 
-(defn render [camera world]
-  (let [{:camera/keys [hsize vsize]} camera
-        coords (for [y (range 0 vsize), x (range 0 hsize)] [x y])]
-    (reduce (partial write-image-pixel camera world)
-            (can/canvas hsize vsize)
-            (report-progress coords))))
+(defn render
+  ([camera world] (render camera world nil))
+  ([camera world report?]
+   (let [{:camera/keys [hsize vsize]} camera
+         coords (for [y (range 0 vsize), x (range 0 hsize)] [x y])
+         action (if report? report-progress identity)]
+     (reduce (partial write-image-pixel camera world)
+             (can/canvas hsize vsize)
+             (action coords)))))

@@ -65,8 +65,8 @@
   (light/point-light
    (tup/point -10 10 -10) (col/color 1 1 1)))
 
-(def width 600)
-(def height 450)
+(def width 1000)
+(def height 670)
 (def field-of-view (/ Math/PI 3))
 (def camera-location (tup/point 0 1.5 -5))
 (def canvas-location (tup/point 0 1 0))
@@ -93,7 +93,7 @@
       (.write out ppm-bytes))))
 
 (defn -main [& args]
-  (let [canvas (cam/render camera world)]
+  (let [canvas (cam/render camera world :report)]
     (write-canvas-to-ppm-file canvas "output.ppm")))
 
 
