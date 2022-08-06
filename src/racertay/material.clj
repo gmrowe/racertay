@@ -50,10 +50,10 @@
   (let [{:material/keys [color diffuse specular shininess ambient]} material
         effective-color (color/color-mul color (:light/intensity light))
         lightv (tup/normalize (tup/tup-sub (:light/position light) point))
-        light-dot-normal (tup/dot lightv normalv)]
-    (color/color-add
-     (calc-ambient effective-color ambient)
-     (calc-diffuse
-      light-dot-normal effective-color diffuse in-shadow?)
-     (calc-specular
-      light-dot-normal normalv lightv eyev light specular shininess in-shadow?))))
+        light-dot-normal (tup/dot lightv normalv)
+        ambient (calc-ambient effective-color ambient)
+        diffuse (calc-diffuse light-dot-normal effective-color diffuse in-shadow?)
+        specular
+        (calc-specular
+         light-dot-normal normalv lightv eyev light specular shininess in-shadow?)]
+    (color/color-add ambient diffuse specular)))
