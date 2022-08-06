@@ -5,23 +5,23 @@
 (defn canvas
   ([w h] (canvas w h (color 0 0 0)))
   ([w h color]
-   {:width w
-    :height h
-    :pixels (vec (repeat (* w h) color))}))
+   #:canvas{:width w
+            :height h
+            :pixels (vec (repeat (* w h) color))}))
 
 (defn- int-in-range? [start end val]
   (and (<= start val) (< val end)))
 
 (defn write-pixel [canvas x y color]
-  (if (and (int-in-range? 0 (:width canvas) x)
-           (int-in-range? 0 (:height canvas) y))
-    (let [index (+ (* (:width canvas) y) x)]
-      (assoc-in canvas [:pixels index] color))
+  (if (and (int-in-range? 0 (:canvas/width canvas) x)
+           (int-in-range? 0 (:canvas/height canvas) y))
+    (let [index (+ (* (:canvas/width canvas) y) x)]
+      (assoc-in canvas [:canvas/pixels index] color))
     canvas))
 
 (defn pixel-at [canvas x y]
-  (let [index (+ (* (:width canvas) y) x)]
-    (get-in canvas [:pixels index])))
+  (let [index (+ (* (:canvas/width canvas) y) x)]
+    (get-in canvas [:canvas/pixels index])))
 
 (defn- clamp [value min max]
   (cond
@@ -66,14 +66,14 @@
   (s/join " " (map output-pixel line)))
 
 (defn canvas-to-p6-ppm [c]
-  (let [header (format "P6\n%s %s\n%s\n" (:width c) (:height c) max-subpixel-value)]
+  (let [header (format "P6\n%s %s\n%s\n" (:canvas/width c) (:canvas/height c) max-subpixel-value)]
     (byte-array
-     (reduce conj-pixel-bytes (vec (.getBytes header)) (:pixels c)))))
+     (reduce conj-pixel-bytes (vec (.getBytes header)) (:canvas/pixels c)))))
 
 (defn canvas-to-ppm [c]
-  (let [header (format "P3%n%s %s%n%s%n" (:width c) (:height c) max-subpixel-value)
-        pixel-data (->> (:pixels c)
-                        (partition (:width c))
+  (let [header (format "P3%n%s %s%n%s%n" (:canvas/width c) (:canvas/height c) max-subpixel-value)
+        pixel-data (->> (:canvas/pixels c)
+                        (partition (:canvas/width c))
                         (map output-line)
                         (map (partial break-line max-ppm-line-len))
                         (s/join "\n"))]

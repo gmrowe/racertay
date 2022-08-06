@@ -7,12 +7,12 @@
 (deftest canvas-creation-test
   (testing "a canvas has a width and a height"
     (let [c (canvas 10 20)]
-      (is (= 10 (:width c)))
-      (is (= 20 (:height c)))))
+      (is (= 10 (:canvas/width c)))
+      (is (= 20 (:canvas/height c)))))
 
   (testing "all pixels of a canvas are initially black"
     (let [c (canvas 10 20)
-          pixels (:pixels c)
+          pixels (:canvas/pixels c)
           black (color 0 0 0)]
       (is (= 200 (count pixels)))
       (is (every? #(color-eq? black %) pixels))))
@@ -20,7 +20,7 @@
   (testing "a canvas can be initialized with an arbitrary color"
     (let [cyan (color 0 1 1)
           c (canvas 10 20 cyan)
-          pixels (:pixels c)]
+          pixels (:canvas/pixels c)]
       (is (every? #(color-eq? cyan %) pixels)))))
 
 (deftest canvas-writing-test
@@ -81,7 +81,7 @@
   (testing "canvas-to-p6-ppm outputs correct pixel data"
     (let [c (canvas 2 1 (color 1.5 0.5 -0.1))
           bytes-per-pixel 3
-          byte-count (* bytes-per-pixel (count (:pixels c)))
+          byte-count (* bytes-per-pixel (count (:canvas/pixels c)))
           ppm (vec (canvas-to-p6-ppm c))
           pixel-data (drop (- (count ppm) byte-count) ppm)]
       (is (= [-1 -128 0 -1 -128 0] pixel-data)))))
