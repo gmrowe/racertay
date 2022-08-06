@@ -19,7 +19,7 @@
 
 (defn shadowed? [world point]
   (let [{:world/keys [light objects]} world
-        point-to-light-vec (tup/tup-sub (light/position light) point)
+        point-to-light-vec (tup/tup-sub (:light/position light) point)
         distance (tup/magnitude point-to-light-vec)
         ray (ray/ray point (tup/normalize point-to-light-vec))]
     (boolean

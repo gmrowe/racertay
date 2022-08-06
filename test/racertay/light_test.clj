@@ -9,8 +9,8 @@
     (let [p (tup/point 0 0 0)            
           i (color/color 1 1 1)
           light (point-light p i)]
-      (is (color/color-eq? i (intensity light)))
-      (is (tup/tup-eq? p (position light))))))
+      (is (color/color-eq? i (:light/intensity light)))
+      (is (tup/tup-eq? p (:light/position light))))))
 
 (deftest light-eq?-test
   (testing "Lights with different positions are not equal"

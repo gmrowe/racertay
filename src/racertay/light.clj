@@ -3,17 +3,11 @@
             [racertay.color :as color]))
 
 (defn point-light [position intensity]
-  {:position position
-   :intensity intensity})
-
-(defn position [light]
-  (:position light))
-
-(defn intensity [light]
-  (:intensity light))
+  {:light/position position
+   :light/intensity intensity})
 
 (defn eq? [light1 light2]
   (and
-   (tup/tup-eq? (:position light1) (:position light2))
-   (color/color-eq? (:intensity light1) (:intensity light2))))
+   (tup/tup-eq? (:light/position light1) (:light/position light2))
+   (color/color-eq? (:light/intensity light1) (:light/intensity light2))))
 

@@ -41,15 +41,15 @@
           reflect-dot-eye (tup/dot reflectv eyev)]
       (if (pos? reflect-dot-eye)
         (color/color-mul-scalar
-         (light/intensity light)
+         (:light/intensity light)
          (* specular (Math/pow reflect-dot-eye shininess)))
         (color/color 0 0 0)))))
 
 (defn lighting
   [material light point eyev normalv in-shadow]
   (let [{:material/keys [color diffuse specular shininess ambient]} material
-        effective-color (color/color-mul color (light/intensity light))
-        lightv (tup/normalize (tup/tup-sub (light/position light) point))
+        effective-color (color/color-mul color (:light/intensity light))
+        lightv (tup/normalize (tup/tup-sub (:light/position light) point))
         light-dot-normal (tup/dot lightv normalv)]
     (color/color-add
      (calc-ambient effective-color ambient)
