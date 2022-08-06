@@ -27,15 +27,15 @@
   (color/color-mul-scalar effective-color ambient))
 
 (defn- calc-diffuse
-  [light-dot-normal effective-color diffuse in-shadow]
-  (if (or in-shadow (neg? light-dot-normal))
+  [light-dot-normal effective-color diffuse in-shadow?]
+  (if (or in-shadow? (neg? light-dot-normal))
     color/black
     (color/color-mul-scalar
      effective-color (* diffuse light-dot-normal))))
 
 (defn- calc-specular
-  [light-dot-normal normalv lightv eyev light specular shininess in-shadow]
-  (if (or in-shadow (neg? light-dot-normal))
+  [light-dot-normal normalv lightv eyev light specular shininess in-shadow?]
+  (if (or in-shadow? (neg? light-dot-normal))
     color/black
     (let [reflectv (tup/reflect (tup/tup-neg lightv) normalv)
           reflect-dot-eye (tup/dot reflectv eyev)]
@@ -46,7 +46,7 @@
         color/black))))
 
 (defn lighting
-  [material light point eyev normalv in-shadow]
+  [material light point eyev normalv in-shadow?]
   (let [{:material/keys [color diffuse specular shininess ambient]} material
         effective-color (color/color-mul color (:light/intensity light))
         lightv (tup/normalize (tup/tup-sub (:light/position light) point))
@@ -54,6 +54,6 @@
     (color/color-add
      (calc-ambient effective-color ambient)
      (calc-diffuse
-      light-dot-normal effective-color diffuse in-shadow)
+      light-dot-normal effective-color diffuse in-shadow?)
      (calc-specular
-      light-dot-normal normalv lightv eyev light specular shininess in-shadow))))
+      light-dot-normal normalv lightv eyev light specular shininess in-shadow?))))
