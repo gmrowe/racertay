@@ -70,7 +70,7 @@
 
   (testing "Intersecting a scaled sphere with a ray"
     (let [r (ray/ray (tup/point 0 0 -5) (tup/vect 0 0 1))
-          s (apply-transform (sphere) (xform/scaling 2 2 2))
+          s (p/apply-transform (sphere) (xform/scaling 2 2 2))
           xs (p/intersect s r)]
       (is (= 2 (count xs)))
       (is (fcmp/nearly-eq? 3 (:intersection/t (nth xs 0))))
@@ -78,7 +78,7 @@
 
   (testing "Intersecting a translated sphere with a ray"
     (let [r (ray/ray (tup/point 0 0 -5) (tup/vect 0 0 1))
-          s (apply-transform (sphere) (xform/translation 5 0 0))
+          s (p/apply-transform (sphere) (xform/translation 5 0 0))
           xs (p/intersect s r)]
       (is (zero? (count xs))))))
 
@@ -89,7 +89,7 @@
 
   (testing "A sphere's transformation can be changed"
     (let [t (xform/translation 2 3 4)
-          s (apply-transform (sphere) t)]
+          s (p/apply-transform (sphere) t)]
       (is (matrix/mat-eq? t (:transform s)))))
 
   (testing "A sphere can incorporate multiple transfomations"
@@ -97,7 +97,7 @@
           rot (xform/rotation-z (/ Math/PI 4))
           scale (xform/scaling 2 2 2)
           compound-op (matrix/mat-mul rot trans scale)
-          s (apply-transform (sphere) scale trans rot)]
+          s (p/apply-transform (sphere) scale trans rot)]
       (is (matrix/mat-eq? compound-op (:transform s)))))
 
   (testing "A sphere's inverse-transform is updated after transfomations"
@@ -105,7 +105,7 @@
           rot (xform/rotation-z (/ Math/PI 4))
           scale (xform/scaling 2 2 2)
           compound-op (matrix/mat-mul rot trans scale)
-          s (apply-transform (sphere) scale trans rot)]
+          s (p/apply-transform (sphere) scale trans rot)]
       (is (matrix/mat-eq? (matrix/inverse compound-op)
                           (:inverse-transform s))))))
 
@@ -138,14 +138,14 @@
       (is (tup/tup-eq? (tup/normalize n) n))))
 
   (testing "The normal of a translated sphere"
-    (let [s (apply-transform (sphere) (xform/translation 0 1 0))
+    (let [s (p/apply-transform (sphere) (xform/translation 0 1 0))
           n (p/normal-at s (tup/point 0 1.70711 -0.70711))]
       (is (tup/tup-eq? (tup/vect 0 0.70711 -0.70711) n))))
 
   (testing "The normal of a transfomed sphere"
     (let [xform (matrix/mat-mul
                  (xform/scaling 1 0.5 1) (xform/rotation-z (/ Math/PI 5)))
-          s (apply-transform (sphere) xform)
+          s (p/apply-transform (sphere) xform)
           rad-2-over-2 (/ (Math/sqrt 2) 2)
           n (p/normal-at s (tup/point 0 rad-2-over-2 (- rad-2-over-2)))]
       (is (tup/tup-eq? (tup/vect 0 0.97014 -0.24254) n)))))

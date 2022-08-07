@@ -9,7 +9,8 @@
             [racertay.transformations :as xform]
             [racertay.ray :as ray]
             [racertay.fcmp :as fcmp]
-            [racertay.intersection :as intersection]))
+            [racertay.intersection :as intersection]
+            [racertay.protocols :as p]))
 
 (def default-light (light/point-light (tup/point -10 10 -10) color/white))
 
@@ -22,7 +23,7 @@
 
 (def sphere-2
   (let [scale (xform/scaling 0.5 0.5 0.5)]
-    (sphere/apply-transform (sphere/sphere) scale)))
+    (p/apply-transform (sphere/sphere) scale)))
 
 (def default-world
   (-> empty-world
@@ -77,7 +78,7 @@
 
   (testing "Shade hit can handle a point that is in shadow"
     (let [s1 (sphere/sphere)
-          s2 (sphere/apply-transform (sphere/sphere) (xform/translation 0 0 10))
+          s2 (p/apply-transform (sphere/sphere) (xform/translation 0 0 10))
           w (-> empty-world
                 (assoc :world/light
                        (light/point-light
