@@ -39,7 +39,7 @@
     (every? identity (map nearly-eq? t1 t2))))
 
   ([t1 t2 & more]
-   (if (tup-eq? t1 t1)
+   (if (tup-eq? t1 t2)
      (if (next more)
        (recur t2 (first more) (next more))
        (tup-eq? t2 (first more)))
