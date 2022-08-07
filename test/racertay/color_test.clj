@@ -10,9 +10,29 @@
       (is (nearly-eq? 0.4 (:green c)))
       (is (nearly-eq? 1.7 (:blue c))))))
 
+(deftest hex->color-test
+  (testing "a zero hex-value converts to black"
+    (let [c (hex->color 0x000000)]
+      (is (color-eq? black c))))
+
+  (testing "the first two nibbles in a hex value are the red components"
+    (let [c (hex->color 0xff0000)]
+      (is (color-eq? red c))))
+
+  (testing "the second two nibbles in a hex value are the green components"
+    (let [c (hex->color 0x00ff00)]
+      (is (color-eq? lime c))))
+
+  (testing "the last two nibbles in a hex value are the blue components"
+    (let [c (hex->color 0x0000ff)]
+      (is (color-eq? blue c))))
+
+  (testing "an arbitrary hex can be converted to a color"
+    (let [c (hex->color 0xD1AE32)]
+      (is (color-eq? (color 0.81961 0.68235 0.19608) c)))))
 (deftest color-equality-test
   (testing "two colors are equal if their r/g/b components are equal"
-    (is (color-eq? (color 1 2 3) (color 1.0 2.0 3.)))))
+    (is (color-eq? (color 1 2 3) (color 1.0 2.0 3.0)))))
 
 (deftest adding-colors-test
   (testing "two colors can be added"
