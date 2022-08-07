@@ -3,6 +3,7 @@
             [racertay.tuple :as tup]
             [racertay.color :as col]
             [racertay.sphere :as sphere]
+            [racertay.plane :as plane]
             [racertay.transformations :as xform]
             [racertay.world :as wor]
             [racertay.light :as light]
@@ -13,24 +14,21 @@
 
 
 (def floor
-  (-> (sphere/sphere)
-      (p/apply-transform (xform/scaling 10 0.01 10))
+  (-> (plane/plane)
       (assoc-in [:material :material/color] (col/color 1 0.9 0.9))
       (assoc-in [:material :material/specular] 0)))
 
 (def left-wall
-  (-> (sphere/sphere)
+  (-> (plane/plane)
       (p/apply-transform
-       (xform/scaling 10 0.01 10)
        (xform/rotation-x (/ Math/PI 2))
        (xform/rotation-y (- (/ Math/PI 4)))
        (xform/translation 0 0 5))
       (assoc :material (:material floor))))
 
 (def right-wall
-  (-> (sphere/sphere)
+  (-> (plane/plane)
       (p/apply-transform
-       (xform/scaling 10 0.01 10)
        (xform/rotation-x (/ Math/PI 2))
        (xform/rotation-y (/ Math/PI 4))
        (xform/translation 0 0 5))
