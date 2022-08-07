@@ -38,8 +38,11 @@
     (is (not (tup-eq? (point 1 2 3) (vect 1 2 3)))))
 
   (testing "Bugfix!! a tuple is not equal to an empty vec"
-    (is (not (tup-eq? (point 1 2 3) [])))))
+    (is (not (tup-eq? (point 1 2 3) []))))
 
+  (testing  "tup-eq? can take more that two args and returns trus iff all are true"
+    (is (tup-eq? (point 1 2 3) (point 1 2 3) (point 1 2 3)))
+    (is (not (tup-eq? (point 1 2 3) (point 2 3 4) (point 1 2 3))))))
 
 (deftest point-test
   (testing "a point creates a tuple with w=1.0"

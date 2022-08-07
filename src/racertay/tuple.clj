@@ -32,10 +32,18 @@
 (defn vect [x y z]
   (tuple x y z 0.0))
 
-(defn tup-eq? [t1 t2]
-  (and
-   (= (count t1) (count t2))
-   (every? identity (map nearly-eq? t1 t2))))
+(defn tup-eq?
+  ([t1 t2]
+   (and
+    (= (count t1) (count t2))
+    (every? identity (map nearly-eq? t1 t2))))
+
+  ([t1 t2 & more]
+   (if (tup-eq? t1 t1)
+     (if (next more)
+       (recur t2 (first more) (next more))
+       (tup-eq? t2 (first more)))
+     false)))
 
 (defn tup-add
   ([t1] t1)
