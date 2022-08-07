@@ -93,7 +93,7 @@
 (deftest color-at-test
   (testing "The color when a ray misses is black"
     (let [ray (ray/ray (tup/point 0 0 -5) (tup/vect 0 1 0))]
-      (is (color/color-eq? (color/color 0 0 0) (color-at default-world ray)))))
+      (is (color/color-eq? color/black (color-at default-world ray)))))
 
   (testing "The color when a ray hits is determined by the hit object"
     (let [ray (ray/ray (tup/point 0 0 -5) (tup/vect 0 0 1))]
