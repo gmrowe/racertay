@@ -6,10 +6,9 @@
    :green (double g)
    :blue (double b)})
 
-(def max-subpixel-value 255.0)
-
 (defn hex->color [hex]
-  (let [r (bit-and (bit-shift-right hex (* 8 2)) 0xFF)
+  (let [max-subpixel-value 255.0
+        r (bit-and (bit-shift-right hex (* 8 2)) 0xFF)
         g (bit-and (bit-shift-right hex (* 8 1)) 0xFF)
         b (bit-and (bit-shift-right hex (* 8 0)) 0xFF)] 
     (color (/ r max-subpixel-value)
