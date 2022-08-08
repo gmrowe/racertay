@@ -38,7 +38,7 @@
   (-> (sphere/sphere)
       (p/apply-transform
        (xform/translation -0.5 1 0.5))
-      (assoc-in [:material :material/color] (col/color 0.1 1 0.5))
+      (assoc-in [:material :material/color] col/violet)
       (assoc-in [:material :material/diffuse] 0.7)
       (assoc-in [:material :material/specular] 0.3)))
 
@@ -47,7 +47,7 @@
       (p/apply-transform
        (xform/scaling 0.5 0.5 0.5)
        (xform/translation 1.5 0.5 -0.5))
-      (assoc-in [:material :material/color] (col/color 0.5 1 0.1))
+      (assoc-in [:material :material/color] col/dark-red)
       (assoc-in [:material :material/diffuse] 0.7)
       (assoc-in [:material :material/specular] 0.3)))
 
@@ -56,7 +56,7 @@
       (p/apply-transform
        (xform/scaling 0.33 0.33 0.33)
        (xform/translation -1.5 0.33 -0.75))
-      (assoc-in [:material :material/color] (col/color 1 0.8 0.1))
+      (assoc-in [:material :material/color] col/gold)
       (assoc-in [:material :material/diffuse] 0.7)
       (assoc-in [:material :material/specular] 0.3)))
 
