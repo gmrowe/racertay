@@ -9,7 +9,7 @@
 (def world-origin (tup/point 0 0 0))
 
 (defrecord ISphere
-  [id transform inverse-transform material]
+    [id transform inverse-transform material]
   p/Shape
   (local-normal-at [sphere local-point]
     (tup/tup-sub local-point world-origin))
