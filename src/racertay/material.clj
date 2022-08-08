@@ -2,7 +2,8 @@
   (:require [racertay.color :as color]
             [racertay.fcmp :as fcmp]
             [racertay.light :as light]
-            [racertay.tuple :as tup]))
+            [racertay.tuple :as tup]
+            [racertay.pattern :as patt]))
 
 (def new-material
   #:material{:color color/white
@@ -47,8 +48,9 @@
 
 (defn lighting
   [material light point eyev normalv in-shadow?]
-  (let [{:material/keys [color diffuse specular shininess ambient]} material
-        effective-color (color/color-mul color (:light/intensity light))
+  (let [{:material/keys [color diffuse specular shininess ambient pattern]} material
+        surface-color (if pattern (patt/stripe-at pattern point) color)
+        effective-color (color/color-mul surface-color (:light/intensity light))
         lightv (tup/normalize (tup/tup-sub (:light/position light) point))
         light-dot-normal (tup/dot lightv normalv)
         ambient (calc-ambient effective-color ambient)

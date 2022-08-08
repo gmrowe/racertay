@@ -4,7 +4,8 @@
             [racertay.color :as color]
             [racertay.fcmp :as fcmp]
             [racertay.tuple :as tup]
-            [racertay.light :as light]))
+            [racertay.light :as light]
+            [racertay.pattern :as patt]))
 
 (deftest material-creation-test
   (testing "Material has a default color"
@@ -113,4 +114,19 @@
             light (light/point-light (tup/point 0 0 -10) color/white)
             in-shadow true]
         (is (color/color-eq? (color/color 0.1 0.1 0.1)
-                             (lighting m light surface-pos eyev normalv in-shadow)))))))
+                             (lighting m light surface-pos eyev normalv in-shadow)))))
+
+    (testing "Lighting with a pattern applied"
+      (let [pattern (patt/stripe-pattern color/white color/black)
+            material (-> new-material
+                         (assoc :material/pattern pattern)
+                         (assoc :material/ambient 1)
+                         (assoc :material/diffuse 0)
+                         (assoc :material/specular 0))
+            eyev (tup/vect 0 0 -1)
+            normalv (tup/vect 0 0 -1)
+            light (light/point-light (tup/point 0 0 -10) color/white)
+            c1 (lighting material light (tup/point 0.9 0 0) eyev normalv false)
+            c2 (lighting material light (tup/point 1.1 0 0) eyev normalv false)]
+        (is (color/color-eq? c1 color/white))
+        (is (color/color-eq? c2 color/black))))))
