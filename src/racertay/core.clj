@@ -9,7 +9,8 @@
             [racertay.light :as light]
             [racertay.camera :as cam]
             [racertay.canvas :as canv]
-            [racertay.protocols :as p])
+            [racertay.protocols :as p]
+            [racertay.pattern :as patt])
   (:gen-class))
 
 
@@ -38,7 +39,8 @@
   (-> (sphere/sphere)
       (p/apply-transform
        (xform/translation -0.5 1 0.5))
-      (assoc-in [:material :material/color] col/violet)
+      (assoc-in [:material :material/pattern]
+                (patt/stripe-pattern col/violet col/beige))
       (assoc-in [:material :material/diffuse] 0.7)
       (assoc-in [:material :material/specular] 0.3)))
 
