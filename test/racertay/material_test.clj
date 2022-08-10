@@ -5,7 +5,8 @@
             [racertay.fcmp :as fcmp]
             [racertay.tuple :as tup]
             [racertay.light :as light]
-            [racertay.pattern :as patt]))
+            [racertay.pattern :as patt]
+            [racertay.sphere :as sphere]))
 
 (deftest material-creation-test
   (testing "Material has a default color"
@@ -60,7 +61,8 @@
 
 (deftest lighting-test
   (let [m new-material
-        surface-pos (tup/point 0 0 0)]
+        surface-pos (tup/point 0 0 0)
+        object (sphere/sphere)]
     (testing "Lighting with the eye between the light and the surface"
       (let [eyev (tup/vect 0 0 -1)
             normalv (tup/vect 0 0 -1)
@@ -68,7 +70,7 @@
             in-shadow false]
         (is (color/color-eq?
              (color/color 1.9 1.9 1.9)
-             (lighting m light surface-pos eyev normalv in-shadow)))))
+             (lighting m object light surface-pos eyev normalv in-shadow)))))
 
     (testing "Lighting with eye betweem the light and surface - eye offset 45 deg"
       (let [rad-2-over-2 (/ (Math/sqrt 2) 2)
@@ -78,7 +80,7 @@
             in-shadow false]
         (is (color/color-eq?
              color/white
-             (lighting m light surface-pos eyev normalv in-shadow)))))
+             (lighting m object light surface-pos eyev normalv in-shadow)))))
 
     (testing "Lighting with eye opposite surface - light offset 45 deg"
       (let [eyev (tup/vect 0 0 -1)
@@ -87,7 +89,7 @@
             in-shadow false]
         (is (color/color-eq?
              (color/color 0.7364 0.7364 0.7364)
-             (lighting m light surface-pos eyev normalv in-shadow)))))
+             (lighting m object light surface-pos eyev normalv in-shadow)))))
 
     (testing "Lighting with eye in path of reflection vector"
       (let [rad-2-over-2 (/ (Math/sqrt 2) 2)
@@ -97,7 +99,7 @@
             in-shadow false]
         (is (color/color-eq?
              (color/color 1.6364 1.6364 1.6364)
-             (lighting m light surface-pos eyev normalv in-shadow)))))
+             (lighting m object light surface-pos eyev normalv in-shadow)))))
 
     (testing "Lighting with light behind surface"
       (let [eyev (tup/vect 0 0 -1)
@@ -106,7 +108,7 @@
             in-shadow false]
         (is (color/color-eq?
              (color/color 0.1 0.1 0.1)
-             (lighting m light surface-pos eyev normalv in-shadow)))))
+             (lighting m object light surface-pos eyev normalv in-shadow)))))
 
     (testing "Lighting when a surface is in shadow"
       (let [eyev (tup/vect 0 0 -1)
@@ -114,7 +116,7 @@
             light (light/point-light (tup/point 0 0 -10) color/white)
             in-shadow true]
         (is (color/color-eq? (color/color 0.1 0.1 0.1)
-                             (lighting m light surface-pos eyev normalv in-shadow)))))
+                             (lighting m object light surface-pos eyev normalv in-shadow)))))
 
     (testing "Lighting with a pattern applied"
       (let [pattern (patt/stripe-pattern color/white color/black)
@@ -126,7 +128,7 @@
             eyev (tup/vect 0 0 -1)
             normalv (tup/vect 0 0 -1)
             light (light/point-light (tup/point 0 0 -10) color/white)
-            c1 (lighting material light (tup/point 0.9 0 0) eyev normalv false)
-            c2 (lighting material light (tup/point 1.1 0 0) eyev normalv false)]
+            c1 (lighting material object light (tup/point 0.9 0 0) eyev normalv false)
+            c2 (lighting material object light (tup/point 1.1 0 0) eyev normalv false)]
         (is (color/color-eq? c1 color/white))
         (is (color/color-eq? c2 color/black))))))

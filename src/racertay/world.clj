@@ -30,6 +30,7 @@
   (let [{:intersection/keys [object point eyev normalv over-point]} comps]
     (material/lighting
      (:material object)
+     object
      (:world/light world)
      point
      eyev

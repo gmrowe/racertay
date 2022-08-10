@@ -47,9 +47,9 @@
         color/black))))
 
 (defn lighting
-  [material light point eyev normalv in-shadow?]
+  [material object light point eyev normalv in-shadow?]
   (let [{:material/keys [color diffuse specular shininess ambient pattern]} material
-        surface-color (if pattern (patt/stripe-at pattern point) color)
+        surface-color (if pattern (patt/stripe-at-object pattern object point) color)
         effective-color (color/color-mul surface-color (:light/intensity light))
         lightv (tup/normalize (tup/tup-sub (:light/position light) point))
         light-dot-normal (tup/dot lightv normalv)
