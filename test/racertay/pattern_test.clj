@@ -58,5 +58,17 @@
                       (p/apply-transform (xform/translation 0.5 0 0)))
           c (p/pattern-at-shape pattern object (tup/point 2.5 0 0))]
       (is (color/color-eq? color/white c)))))
-(-> (stripe-pattern color/white color/black)
-                      (p/apply-transform (xform/scaling 2 2 2)))
+
+(deftest gradient-pattern-test
+  (testing "A gradient pattern linearly interpolates between colors"
+    (let [p (gradient-pattern color/white color/black)]
+      (is (color/color-eq? color/white (p/pattern-at p (tup/point 0 0 0))))
+      (is (color/color-eq?
+           (color/color 0.75 0.75 0.75) (p/pattern-at p (tup/point 0.25 0 0))))
+      (is (color/color-eq?
+           (color/color 0.5 0.5 0.5) (p/pattern-at p (tup/point 0.5 0 0))))
+      (is (color/color-eq?
+           (color/color 0.25 0.25 0.25) (p/pattern-at p (tup/point 0.75 0 0)))))))
+
+
+
