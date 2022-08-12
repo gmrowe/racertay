@@ -14,20 +14,18 @@
 
 (defn stripe-pattern [color-a color-b]
   (map->IStripePattern
-   (merge p/pattern-data
-          {:a color-a
-           :b color-b})))
+   (merge p/pattern-data {:a color-a :b color-b})))
 
 (defrecord IGradientPattern
     [transform inverse-transform a b]
   p/Pattern
   (pattern-at [pattern point]
     (let [{:keys [a b]} pattern
-          px (tup/x point)]
-      (color/color-add a (color/color-mul-scalar (color/color-sub b a) (- px (Math/floor px)))))))
+          px (tup/x point)
+          b-comp (color/color-mul-scalar
+                  (color/color-sub b a) (- px (Math/floor px)))]
+      (color/color-add a b-comp))))
 
 (defn gradient-pattern [color-a color-b]
   (map->IGradientPattern
-   (merge p/pattern-data
-          {:a color-a
-           :b color-b})))
+   (merge p/pattern-data {:a color-a :b color-b})))
