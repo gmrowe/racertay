@@ -33,16 +33,20 @@
        (xform/rotation-x (/ Math/PI 2))
        (xform/rotation-y (/ Math/PI 4))
        (xform/translation 0 0 5))
-      (assoc :material (:material floor))))
+      (assoc :material (:material floor))
+      (assoc-in [:material :material/pattern]
+                (patt/gradient-pattern col/orange col/green))))
 
 (def middle-sphere
-  (-> (sphere/sphere)
-      (p/apply-transform
-       (xform/translation -0.5 1 0.5))
-      (assoc-in [:material :material/pattern]
-                (patt/stripe-pattern col/violet col/beige))
-      (assoc-in [:material :material/diffuse] 0.7)
-      (assoc-in [:material :material/specular] 0.3)))
+  (let [pattern (-> (patt/stripe-pattern col/violet col/beige)
+                    (p/apply-transform (xform/scaling 0.2 0.2 0.2)
+                                       (xform/rotation-z (/ Math/PI 3))))]
+    (-> (sphere/sphere)
+        (p/apply-transform
+         (xform/translation -0.5 1 0.5))
+        (assoc-in [:material :material/pattern] pattern)
+        (assoc-in [:material :material/diffuse] 0.7)
+        (assoc-in [:material :material/specular] 0.3))))
 
 (def right-sphere
   (-> (sphere/sphere)
@@ -66,8 +70,8 @@
   (light/point-light
    (tup/point -10 10 -10) col/white))
 
-(def width 1000)
-(def height 670)
+(def width 300)
+(def height 150)
 (def field-of-view (/ Math/PI 3))
 (def camera-location (tup/point 0 1.5 -5))
 (def canvas-location (tup/point 0 1 0))
