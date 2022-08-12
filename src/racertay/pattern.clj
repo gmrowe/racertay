@@ -29,3 +29,19 @@
 (defn gradient-pattern [color-a color-b]
   (map->IGradientPattern
    (merge p/pattern-data {:a color-a :b color-b})))
+
+
+(defrecord IRingPattern
+    [transform inverse-transform a b]
+  p/Pattern
+  (pattern-at [pattern point]
+    (let [px (tup/x point)
+          pz (tup/z point)
+          radicand (+ (* px px) (* pz pz))]
+      (if (zero? (mod (Math/floor (Math/sqrt radicand)) 2))
+        (:a pattern)
+        (:b pattern)))))
+
+(defn ring-pattern [color-a color-b]
+  (map->IRingPattern
+   (merge p/pattern-data {:a color-a :b color-b})))

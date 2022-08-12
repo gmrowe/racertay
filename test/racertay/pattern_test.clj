@@ -70,5 +70,14 @@
       (is (color/color-eq?
            (color/color 0.25 0.25 0.25) (p/pattern-at p (tup/point 0.75 0 0)))))))
 
+(deftest ring-pattern-test
+  (testing "A ring should extend in x and z"
+    (let [pattern (ring-pattern color/white color/black)]
+      (is (color/color-eq? color/white (p/pattern-at pattern (tup/point 0 0 0))))
+      (is (color/color-eq? color/black (p/pattern-at pattern (tup/point 1 0 0))))
+      (is (color/color-eq? color/black (p/pattern-at pattern (tup/point 0 0 1))))
+      (is (color/color-eq?
+           color/black (p/pattern-at pattern (tup/point 0.708 0 0.708)))))))
+
 
 
