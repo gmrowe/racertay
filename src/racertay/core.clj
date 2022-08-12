@@ -42,8 +42,7 @@
                     (p/apply-transform (xform/scaling 0.2 0.2 0.2)
                                        (xform/rotation-z (/ Math/PI 3))))]
     (-> (sphere/sphere)
-        (p/apply-transform
-         (xform/translation -0.5 1 0.5))
+        (p/apply-transform (xform/translation -0.5 1 0.5))
         (assoc-in [:material :material/pattern] pattern)
         (assoc-in [:material :material/diffuse] 0.7)
         (assoc-in [:material :material/specular] 0.3))))
