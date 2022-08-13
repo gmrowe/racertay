@@ -37,11 +37,26 @@
   (pattern-at [pattern point]
     (let [px (tup/x point)
           pz (tup/z point)
-          radicand (+ (* px px) (* pz pz))]
-      (if (zero? (mod (Math/floor (Math/sqrt radicand)) 2))
+          xz-distance-from-origin (Math/sqrt (+ (* px px) (* pz pz)))]
+      (if (zero? (mod (Math/floor xz-distance-from-origin) 2))
         (:a pattern)
         (:b pattern)))))
 
 (defn ring-pattern [color-a color-b]
   (map->IRingPattern
+   (merge p/pattern-data {:a color-a :b color-b})))
+
+(defrecord ICheckerPattern
+    [transform inverse-transform a b]
+  p/Pattern
+  (pattern-at [pattern point]
+    (let [x (int (Math/floor (tup/x point)))
+          y (int (Math/floor (tup/y point)))
+          z (int (Math/floor (tup/z point)))]
+      (if (zero? (mod (+ x y z) 2))
+        (:a pattern)
+        (:b pattern)))))
+
+(defn checker-pattern [color-a color-b]
+  (map->ICheckerPattern
    (merge p/pattern-data {:a color-a :b color-b})))

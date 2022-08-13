@@ -79,5 +79,26 @@
       (is (color/color-eq?
            color/black (p/pattern-at pattern (tup/point 0.708 0 0.708)))))))
 
+(deftest checker-pattern-test
+  (testing "Checkers should repeat in x"
+    (let [pattern (checker-pattern color/white color/black)]
+      (is (color/color-eq? color/white (p/pattern-at pattern (tup/point 0 0 0))))
+      (is (color/color-eq? color/white (p/pattern-at pattern (tup/point 0.99 0 0))))
+      (is (color/color-eq? color/black (p/pattern-at pattern (tup/point 1.01 0 0))))))
+
+  (testing "Checkers should repeat in y"
+    (let [pattern (checker-pattern color/white color/black)]
+      (is (color/color-eq? color/white (p/pattern-at pattern (tup/point 0 0 0))))
+      (is (color/color-eq? color/white (p/pattern-at pattern (tup/point 0 0.99 0))))
+      (is (color/color-eq? color/black (p/pattern-at pattern (tup/point 0 1.01 0))))))
+
+  (testing "Checkers should repeat in z"
+    (let [pattern (checker-pattern color/white color/black)]
+      (is (color/color-eq? color/white (p/pattern-at pattern (tup/point 0 0 0))))
+      (is (color/color-eq? color/white (p/pattern-at pattern (tup/point 0 0 0.99))))
+      (is (color/color-eq? color/black (p/pattern-at pattern (tup/point 0 0 1.01)))))))
+
+
+
 
 
