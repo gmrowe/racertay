@@ -98,7 +98,19 @@
       (is (color/color-eq? color/white (p/pattern-at pattern (tup/point 0 0 0.99))))
       (is (color/color-eq? color/black (p/pattern-at pattern (tup/point 0 0 1.01)))))))
 
+(deftest nested-checker-pattern-test
+  (testing "A nested checker pattern should delegate to underlying patterns"
+    (let [pattern-a (-> (stripe-pattern color/red color/green)
+                        (p/apply-transform (xform/scaling 0.25 0.25 0.25)
+                                           (xform/rotation-y (/ Math/PI 4))))
+          pattern-b (-> (checker-pattern color/purple color/orange)
+                        (p/apply-transform (xform/scaling 0.33 0.33 0.33)))
+          nest-check (nested-checker-pattern pattern-a pattern-b)]
+      (let [point (tup/point 0 0 0)]
+        (is (color/color-eq?
+             (p/pattern-at pattern-a point) (p/pattern-at nest-check point))))
 
-
-
+      (let [point (tup/point 1.01 0 0)]
+        (is (color/color-eq?
+             (p/pattern-at pattern-b point) (p/pattern-at nest-check point)))))))
 

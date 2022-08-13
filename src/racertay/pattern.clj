@@ -30,7 +30,6 @@
   (map->IGradientPattern
    (merge p/pattern-data {:a color-a :b color-b})))
 
-
 (defrecord IRingPattern
     [transform inverse-transform a b]
   p/Pattern
@@ -60,3 +59,19 @@
 (defn checker-pattern [color-a color-b]
   (map->ICheckerPattern
    (merge p/pattern-data {:a color-a :b color-b})))
+
+
+(defrecord INestedChecker
+    [transform inverse-transform a b]
+  p/Pattern
+  (pattern-at [pattern point]
+    (let [x (int (Math/floor (tup/x point)))
+          y (int (Math/floor (tup/y point)))
+          z (int (Math/floor (tup/z point)))]
+      (if (zero? (mod (+ x y z) 2))
+        (p/pattern-at (:a pattern) point)
+        (p/pattern-at (:b pattern) point)))))
+
+(defn nested-checker-pattern [pattern-a pattern-b]
+  (map->INestedChecker
+   (merge p/pattern-data {:a pattern-a :b pattern-b})))
