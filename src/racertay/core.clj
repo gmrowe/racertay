@@ -35,10 +35,10 @@
        (xform/translation 0 0 5))
       (assoc :material (:material floor))
       (assoc-in [:material :material/pattern]
-                (patt/gradient-pattern col/orange col/green))))
+                (patt/ring-pattern col/orange col/green))))
 
 (def middle-sphere
-  (let [pattern (-> (patt/stripe-pattern col/violet col/beige)
+  (let [pattern (-> (patt/gradient-pattern col/violet col/beige)
                     (p/apply-transform (xform/scaling 0.2 0.2 0.2)
                                        (xform/rotation-z (/ Math/PI 3))))]
     (-> (sphere/sphere)
