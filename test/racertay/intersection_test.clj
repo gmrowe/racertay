@@ -6,6 +6,7 @@
             [racertay.ray :as ray]
             [racertay.tuple :as tup]
             [racertay.transformations :as xform]
+            [racertay.plane :as plane]
             [racertay.protocols :as p]))
 
 (deftest intersection-creation-test
@@ -108,4 +109,13 @@
                     (tup/z (:intersection/point comps)))]
       (is (< diff-z (- (/ fcmp/epsilon 2))))
       (is (< (tup/z (:intersection/over-point comps))
-             (tup/z (:intersection/point comps)))))))
+             (tup/z (:intersection/point comps))))))
+
+  (testing "The reflection vector should be precomputed"
+    (let [rad-2 (Math/sqrt 2)
+          shape (plane/plane)
+          r (ray/ray (tup/point 0 1 -1) (tup/vect 0 (/ rad-2 -2) (/ rad-2 2)))
+          i (intersection rad-2 shape)
+          comps (prepare-computations i r)]
+      (is (tup/tup-eq? (tup/vect 0 (/ rad-2 2) (/ rad-2 2))
+                       (:intersection/reflectv comps))))))

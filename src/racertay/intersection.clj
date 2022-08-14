@@ -23,10 +23,12 @@
         inside (neg? normalv-dot-eyev)
         true-normalv (if inside (tup/tup-neg normalv) normalv)
         over-point (tup/tup-add
-                    point (tup/tup-mul-scalar true-normalv (/ fcmp/epsilon 2)))]
+                    point (tup/tup-mul-scalar true-normalv (/ fcmp/epsilon 2)))
+        reflectv (tup/reflect (:ray/direction ray) true-normalv)]
     (merge inters
            #:intersection{:point point
                           :eyev eyev
                           :normalv true-normalv
                           :inside inside
-                          :over-point over-point})))
+                          :over-point over-point
+                          :reflectv reflectv})))
