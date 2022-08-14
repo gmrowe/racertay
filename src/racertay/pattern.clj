@@ -37,7 +37,7 @@
     (let [px (tup/x point)
           pz (tup/z point)
           xz-distance-from-origin (Math/sqrt (+ (* px px) (* pz pz)))]
-      (if (zero? (mod (Math/floor xz-distance-from-origin) 2))
+      (if (zero? (mod (int (Math/floor xz-distance-from-origin)) 2))
         (:a pattern)
         (:b pattern)))))
 
@@ -60,17 +60,17 @@
   (map->ICheckerPattern
    (merge p/pattern-data {:a color-a :b color-b})))
 
-
 (defrecord INestedChecker
     [transform inverse-transform a b]
   p/Pattern
   (pattern-at [pattern point]
-    (let [x (int (Math/floor (tup/x point)))
+    (let [{:keys [a b]} pattern
+          x (int (Math/floor (tup/x point)))
           y (int (Math/floor (tup/y point)))
           z (int (Math/floor (tup/z point)))]
       (if (zero? (mod (+ x y z) 2))
-        (p/pattern-at (:a pattern) point)
-        (p/pattern-at (:b pattern) point)))))
+        (p/pattern-at a (matrix/mat-mul-tup (:inverse-transform a) point))
+        (p/pattern-at b (matrix/mat-mul-tup (:inverse-transform b) point))))))
 
 (defn nested-checker-pattern [pattern-a pattern-b]
   (map->INestedChecker
