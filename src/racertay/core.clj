@@ -24,8 +24,18 @@
       (p/apply-transform
        (xform/rotation-x (/ Math/PI 2))
        (xform/rotation-y (- (/ Math/PI 4)))
-       (xform/translation 0 0 5))
-      (assoc :material (:material floor))))
+       (xform/translation 0 0 5))))
+
+(defn chevron-pattern [color-a color-b]
+  (let [angle (/ Math/PI 2)
+        scale (xform/scaling 0.50 0.50 0.50)
+        horizontal (xform/rotation-y angle)
+        pattern (patt/stripe-pattern color-a color-b)]
+    (p/apply-transform
+     (patt/nested-checker-pattern
+      (p/apply-transform pattern scale horizontal)
+      (p/apply-transform pattern scale))
+     (xform/rotation-y (/ Math/PI -4)))))
 
 (def right-wall
   (-> (plane/plane)
@@ -33,9 +43,8 @@
        (xform/rotation-x (/ Math/PI 2))
        (xform/rotation-y (/ Math/PI 4))
        (xform/translation 0 0 5))
-      (assoc :material (:material floor))
       (assoc-in [:material :material/pattern]
-                (patt/ring-pattern col/orange col/green))))
+                (chevron-pattern col/orange col/green))))
 
 (def middle-sphere
   (let [pattern (-> (patt/gradient-pattern col/violet col/beige)
@@ -69,8 +78,8 @@
   (light/point-light
    (tup/point -10 10 -10) col/white))
 
-(def width 300)
-(def height 150)
+(def width 800)
+(def height 600)
 (def field-of-view (/ Math/PI 3))
 (def camera-location (tup/point 0 1.5 -5))
 (def canvas-location (tup/point 0 1 0))
@@ -99,5 +108,3 @@
 (defn -main [& args]
   (let [canvas (cam/render camera world :report)]
     (write-canvas-to-ppm-file canvas "output.ppm")))
-
-
