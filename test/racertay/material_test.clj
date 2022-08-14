@@ -22,7 +22,10 @@
     (is (fcmp/nearly-eq? 0.9 (:material/specular new-material))))
 
   (testing "Material has default shininess attribute"
-    (is (fcmp/nearly-eq? 200.0 (:material/shininess new-material)))))
+    (is (fcmp/nearly-eq? 200.0 (:material/shininess new-material))))
+
+  (testing "Material has a default reflectivity"
+    (is (fcmp/nearly-eq? 0.0 (:material/reflective new-material)))))
 
 (deftest material-assoc-test
   (testing "Material color can be assoc'ed"
