@@ -17,7 +17,8 @@
 (def floor
   (-> (plane/plane)
       (assoc-in [:material :material/color] (col/color 1 0.9 0.9))
-      (assoc-in [:material :material/specular] 0)))
+      (assoc-in [:material :material/specular] 0)
+      (assoc-in [:material :material/reflective] 0.25)))
 
 (def left-wall
   (-> (plane/plane)
@@ -27,14 +28,13 @@
        (xform/translation 0 0 5))))
 
 (defn chevron-pattern [color-a color-b]
-  (let [angle (/ Math/PI 2)
-        scale (xform/scaling 0.50 0.50 0.50)
-        horizontal (xform/rotation-y angle)
+  (let [half-scale (xform/scaling 0.50 0.50 0.50)
+        horizontal (xform/rotation-y (/ Math/PI 2))
         pattern (patt/stripe-pattern color-a color-b)]
     (p/apply-transform
      (patt/nested-checker-pattern
-      (p/apply-transform pattern scale horizontal)
-      (p/apply-transform pattern scale))
+      (p/apply-transform pattern half-scale horizontal)
+      (p/apply-transform pattern half-scale))
      (xform/rotation-y (/ Math/PI -4)))))
 
 (def right-wall
@@ -79,7 +79,7 @@
    (tup/point -10 10 -10) col/white))
 
 (def width 800)
-(def height 600)
+(def height 500)
 (def field-of-view (/ Math/PI 3))
 (def camera-location (tup/point 0 1.5 -5))
 (def canvas-location (tup/point 0 1 0))
