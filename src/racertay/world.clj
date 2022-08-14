@@ -32,7 +32,7 @@
      (:material object)
      object
      (:world/light world)
-     point
+     over-point
      eyev
      normalv
      (shadowed? world over-point))))
