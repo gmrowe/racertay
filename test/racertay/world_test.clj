@@ -5,6 +5,7 @@
             [racertay.tuple :as tup]
             [racertay.color :as color]
             [racertay.sphere :as sphere]
+            [racertay.plane :as plane]
             [racertay.material :as material]
             [racertay.transformations :as xform]
             [racertay.ray :as ray]
@@ -44,8 +45,8 @@
   (testing "The default world containd sphere-1"
     (is (some? (some #{sphere-1} (:world/objects default-world)))))
 
-  (testing "The defaule world containd sphere-2"
-    (is (some? (some #{sphere-1} (:world/objects default-world))))))
+  (testing "The default world contains sphere-2"
+    (is (some? (some #{sphere-2} (:world/objects default-world))))))
 
 (deftest intersect-world-test
   (testing "A ray can intersect with a world"
@@ -121,3 +122,45 @@
 
   (testing "There is no shadow when object is behind the point"
     (is (not (shadowed? default-world (tup/point -2 2 -2))))))
+
+(deftest reflected-color-test
+  (testing "The reflected color for a non-reflective material is black"
+    (let [ray (ray/ray (tup/point 0 0 0) (tup/vect 0 0 1))
+          w (assoc-in default-world [:world/objects 1 :material :material/ambient] 1)
+          shape (nth (:world/objects w) 1)
+          i (intersection/intersection 1 shape)
+          comps (intersection/prepare-computations i ray)]
+      (is (color/color-eq? color/black (reflected-color w comps)))))
+
+  (let [shape (-> (plane/plane)
+                  (assoc-in [:material :material/reflective] 0.5)
+                  (p/apply-transform (xform/translation 0 -1 0)))
+        w (update default-world :object conj shape)
+        rad-2 (Math/sqrt 2)
+        ray (ray/ray (tup/point 0 0 -3) (tup/vect 0 (/ rad-2 -2) (/ rad-2 2)))
+        i (intersection/intersection rad-2 shape)
+        comps (intersection/prepare-computations i ray)]
+    (testing "The reflected color for a reflective material"
+      (is (color/color-eq? (color/color 0.19033 0.23791 0.14274)
+                           (reflected-color w comps))))
+
+    (testing "Shade-hit with a reflective material"
+      (is (color/color-eq? (color/color 0.87676 0.92434 0.82917)
+                           (shade-hit w comps))))
+
+    (testing "The reflected color at max recursive depth is black"
+      (is (color/color-eq? color/black (reflected-color w comps 0)))))
+
+  (testing "Mutually reflective surfaces does not cause infinite recursion"
+    (let [lower-mirror (-> (plane/plane)
+                           (assoc-in [:material :material/reflective] 1.0)
+                           (p/apply-transform (xform/translation 0 -1 0)))
+          upper-mirror (-> (plane/plane)
+                           (assoc-in [:material :material/reflective] 1.0)
+                           (p/apply-transform (xform/translation 0 1 0)))
+          w (-> empty-world
+                (assoc :world/light (light/point-light (tup/point 0 0 0) color/white))
+                (update :world/objects conj lower-mirror)
+                (update :world/objects conj upper-mirror))
+          r (ray/ray (tup/point 0 0 0) (tup/vect 0 1 0))]
+      (is (some? (color-at w r))))))

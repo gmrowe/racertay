@@ -6,6 +6,7 @@
             [racertay.intersection :as intersection]
             [racertay.tuple :as tup]
             [racertay.light :as light]
+            [racertay.fcmp :as fcmp]
             [racertay.ray :as ray]))
 
 (def empty-world
@@ -26,19 +27,42 @@
      (when-let [hit (intersection/hit (intersect-world world ray))]
        (< (:intersection/t hit) distance)))))
 
-(defn shade-hit [world comps]
-  (let [{:intersection/keys [object point eyev normalv over-point]} comps]
-    (material/lighting
-     (:material object)
-     object
-     (:world/light world)
-     over-point
-     eyev
-     normalv
-     (shadowed? world over-point))))
+(declare color-at)
 
-(defn color-at [world ray]
-  (if-let [hit (intersection/hit (intersect-world world ray))]
-    (shade-hit world (intersection/prepare-computations hit ray))
-    color/black))
+(defn- calc-reflected-color [world reflectv over-point reflective remaining]
+  (let [reflect-ray (ray/ray over-point reflectv)
+        color (color-at world reflect-ray (dec remaining))]
+    (color/color-mul-scalar color reflective)))
+
+(def max-mutual-recursion-depth 5)
+
+(defn reflected-color
+  ([world comps]
+   (reflected-color world comps max-mutual-recursion-depth))
+  ([world comps remaining]
+   (let [{:intersection/keys [object over-point reflectv]} comps
+         reflective (get-in object [:material :material/reflective])]
+     (if (or (< remaining 1) (fcmp/nearly-eq? 0 reflective))
+       color/black
+       (calc-reflected-color world reflectv over-point reflective remaining)))))
+
+(defn shade-hit
+  ([world comps]
+   (shade-hit world comps max-mutual-recursion-depth))
+  ([world comps remaining]
+   (let [{:intersection/keys [object point eyev normalv over-point]} comps
+         shadowed (shadowed? world over-point)
+         surface  (material/lighting
+                   (:material object) object (:world/light world) over-point
+                   eyev normalv shadowed)
+         reflected (reflected-color world comps remaining)]
+     (color/color-add surface reflected))))
+
+(defn color-at
+  ([world ray]
+   (color-at world ray max-mutual-recursion-depth))
+  ([world ray remaining]
+   (if-let [hit (intersection/hit (intersect-world world ray))]
+     (shade-hit world (intersection/prepare-computations hit ray) remaining)
+     color/black)))
 
