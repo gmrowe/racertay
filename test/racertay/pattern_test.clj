@@ -39,7 +39,7 @@
 (deftest pattern-at-shape-test
   (testing "Stripes with an object transformation"
     (let [object (-> (shape/sphere)
-                     (p/apply-transform (xform/scaling 2 2 2)))
+                     (shape/apply-transform (xform/scaling 2 2 2)))
           pattern (stripe-pattern color/white color/black)
           c (p/pattern-at-shape pattern object (tup/point 1.5 0 0))]
       (is (color/color-eq? color/white c))))
@@ -47,15 +47,15 @@
   (testing "Stripes with a pattern transformation"
     (let [object (shape/sphere)
           pattern (-> (stripe-pattern color/white color/black)
-                      (p/apply-transform (xform/scaling 2 2 2)))
+                      (shape/apply-transform (xform/scaling 2 2 2)))
           c (p/pattern-at-shape pattern object (tup/point 1.5 0 0))]
       (is (color/color-eq? color/white c))))
 
   (testing "Stripes with both object and pattern transformations"
     (let [object (-> (shape/sphere)
-                     (p/apply-transform (xform/scaling 2 2 2)))
+                     (shape/apply-transform (xform/scaling 2 2 2)))
           pattern (-> (stripe-pattern color/white color/black)
-                      (p/apply-transform (xform/translation 0.5 0 0)))
+                      (shape/apply-transform (xform/translation 0.5 0 0)))
           c (p/pattern-at-shape pattern object (tup/point 2.5 0 0))]
       (is (color/color-eq? color/white c)))))
 
@@ -101,10 +101,10 @@
 (deftest nested-checker-pattern-test
   (testing "A nested checker pattern should delegate to underlying patterns"
     (let [pattern-a (-> (stripe-pattern color/red color/green)
-                        (p/apply-transform (xform/scaling 0.25 0.25 0.25)
+                        (shape/apply-transform (xform/scaling 0.25 0.25 0.25)
                                            (xform/rotation-y (/ Math/PI 4))))
           pattern-b (-> (checker-pattern color/purple color/orange)
-                        (p/apply-transform (xform/scaling 0.33 0.33 0.33)))
+                        (shape/apply-transform (xform/scaling 0.33 0.33 0.33)))
           nest-check (nested-checker-pattern pattern-a pattern-b)]
       (let [point (tup/point 0 0 0)]
         (is (color/color-eq?

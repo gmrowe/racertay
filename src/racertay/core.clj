@@ -21,7 +21,7 @@
 
 (def left-wall
   (-> (shape/plane)
-      (p/apply-transform
+      (shape/apply-transform
        (xform/rotation-x (/ Math/PI 2))
        (xform/rotation-y (- (/ Math/PI 4)))
        (xform/translation 0 0 5))))
@@ -30,15 +30,15 @@
   (let [half-scale (xform/scaling 0.50 0.50 0.50)
         horizontal (xform/rotation-y (/ Math/PI 2))
         pattern (patt/stripe-pattern color-a color-b)]
-    (p/apply-transform
+    (shape/apply-transform
      (patt/nested-checker-pattern
-      (p/apply-transform pattern half-scale horizontal)
-      (p/apply-transform pattern half-scale))
+      (shape/apply-transform pattern half-scale horizontal)
+      (shape/apply-transform pattern half-scale))
      (xform/rotation-y (/ Math/PI -4)))))
 
 (def right-wall
   (-> (shape/plane)
-      (p/apply-transform
+      (shape/apply-transform
        (xform/rotation-x (/ Math/PI 2))
        (xform/rotation-y (/ Math/PI 4))
        (xform/translation 0 0 5))
@@ -47,17 +47,17 @@
 
 (def middle-sphere
   (let [pattern (-> (patt/gradient-pattern col/violet col/beige)
-                    (p/apply-transform (xform/scaling 0.2 0.2 0.2)
+                    (shape/apply-transform (xform/scaling 0.2 0.2 0.2)
                                        (xform/rotation-z (/ Math/PI 3))))]
     (-> (shape/sphere)
-        (p/apply-transform (xform/translation -0.5 1 0.5))
+        (shape/apply-transform (xform/translation -0.5 1 0.5))
         (assoc-in [:material :material/pattern] pattern)
         (assoc-in [:material :material/diffuse] 0.7)
         (assoc-in [:material :material/specular] 0.3))))
 
 (def right-sphere
   (-> (shape/sphere)
-      (p/apply-transform
+      (shape/apply-transform
        (xform/scaling 0.5 0.5 0.5)
        (xform/translation 1.5 0.5 -0.5))
       (assoc-in [:material :material/color] col/dark-red)
@@ -66,7 +66,7 @@
 
 (def left-sphere
   (-> (shape/sphere)
-      (p/apply-transform
+      (shape/apply-transform
        (xform/scaling 0.33 0.33 0.33)
        (xform/translation -1.5 0.33 -0.75))
       (assoc-in [:material :material/color] col/gold)

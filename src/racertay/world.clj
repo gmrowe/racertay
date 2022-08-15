@@ -2,11 +2,13 @@
   (:require [racertay.protocols :as p]
             [racertay.color :as color]
             [racertay.material :as material]
+            [racertay.computations :as comps]
             [racertay.intersection :as intersection]
             [racertay.tuple :as tup]
             [racertay.light :as light]
             [racertay.fcmp :as fcmp]
-            [racertay.ray :as ray]))
+            [racertay.ray :as ray]
+            [racertay.shape :as shape]))
 
 (def empty-world
   #:world{:light nil
@@ -14,7 +16,7 @@
 
 (defn intersect-world [world ray]
   (sort-by :intersection/t
-           (mapcat #(p/intersect % ray) (:world/objects world))))
+           (mapcat #(shape/intersect % ray) (:world/objects world))))
 
 
 (defn shadowed? [world point]
@@ -62,5 +64,5 @@
    (color-at world ray max-mutual-recursion-depth))
   ([world ray remaining]
    (if-let [hit (intersection/hit (intersect-world world ray))]
-     (shade-hit world (intersection/prepare-computations hit ray) remaining)
+     (shade-hit world (comps/prepare-computations hit ray) remaining)
      color/black)))

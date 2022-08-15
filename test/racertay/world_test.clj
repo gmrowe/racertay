@@ -10,6 +10,7 @@
             [racertay.ray :as ray]
             [racertay.fcmp :as fcmp]
             [racertay.intersection :as intersection]
+            [racertay.computations :as comps]
             [racertay.protocols :as p]))
 
 (def default-light (light/point-light (tup/point -10 10 -10) color/white))
@@ -23,7 +24,7 @@
 
 (def sphere-2
   (let [scale (xform/scaling 0.5 0.5 0.5)]
-    (p/apply-transform (shape/sphere) scale)))
+    (shape/apply-transform (shape/sphere) scale)))
 
 (def default-world
   (-> empty-world
@@ -62,7 +63,7 @@
     (let [ray (ray/ray (tup/point 0 0 -5) (tup/vect 0 0 1))
           shape (nth (:world/objects default-world) 0)
           i (intersection/intersection 4 shape)
-          comps (intersection/prepare-computations i ray)
+          comps (comps/prepare-computations i ray)
           c (shade-hit default-world comps)]
       (is (color/color-eq? (color/color 0.38066 0.47583 0.2855) c))))
 
@@ -72,13 +73,13 @@
           ray (ray/ray (tup/point 0 0 0) (tup/vect 0 0 1))
           shape (nth (:world/objects w) 1)
           i (intersection/intersection 0.5 shape)
-          comps (intersection/prepare-computations i ray)
+          comps (comps/prepare-computations i ray)
           c (shade-hit w comps)]
       (is (color/color-eq? (color/color 0.90498 0.90498 0.90498) c))))
 
   (testing "Shade hit can handle a point that is in shadow"
     (let [s1 (shape/sphere)
-          s2 (p/apply-transform (shape/sphere) (xform/translation 0 0 10))
+          s2 (shape/apply-transform (shape/sphere) (xform/translation 0 0 10))
           w (-> empty-world
                 (assoc :world/light
                        (light/point-light
@@ -87,7 +88,7 @@
                 (update :world/objects conj s2))
           r (ray/ray (tup/point 0 0 5) (tup/vect 0 0 1))
           i (intersection/intersection 4 s2)
-          comps (intersection/prepare-computations i r)
+          comps (comps/prepare-computations i r)
           c (shade-hit w comps)]
       (is (color/color-eq? (color/color 0.1 0.1 0.1) c)))))
 
@@ -128,17 +129,17 @@
           w (assoc-in default-world [:world/objects 1 :material :material/ambient] 1)
           shape (nth (:world/objects w) 1)
           i (intersection/intersection 1 shape)
-          comps (intersection/prepare-computations i ray)]
+          comps (comps/prepare-computations i ray)]
       (is (color/color-eq? color/black (reflected-color w comps)))))
 
   (let [shape (-> (shape/plane)
                   (assoc-in [:material :material/reflective] 0.5)
-                  (p/apply-transform (xform/translation 0 -1 0)))
+                  (shape/apply-transform (xform/translation 0 -1 0)))
         w (update default-world :object conj shape)
         rad-2 (Math/sqrt 2)
         ray (ray/ray (tup/point 0 0 -3) (tup/vect 0 (/ rad-2 -2) (/ rad-2 2)))
         i (intersection/intersection rad-2 shape)
-        comps (intersection/prepare-computations i ray)]
+        comps (comps/prepare-computations i ray)]
     (testing "The reflected color for a reflective material"
       (is (color/color-eq? (color/color 0.19033 0.23791 0.14274)
                            (reflected-color w comps))))
@@ -153,10 +154,10 @@
   (testing "Mutually reflective surfaces does not cause infinite recursion"
     (let [lower-mirror (-> (shape/plane)
                            (assoc-in [:material :material/reflective] 1.0)
-                           (p/apply-transform (xform/translation 0 -1 0)))
+                           (shape/apply-transform (xform/translation 0 -1 0)))
           upper-mirror (-> (shape/plane)
                            (assoc-in [:material :material/reflective] 1.0)
-                           (p/apply-transform (xform/translation 0 1 0)))
+                           (shape/apply-transform (xform/translation 0 1 0)))
           w (-> empty-world
                 (assoc :world/light (light/point-light (tup/point 0 0 0) color/white))
                 (update :world/objects conj lower-mirror)

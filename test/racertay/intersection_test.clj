@@ -6,6 +6,7 @@
             [racertay.ray :as ray]
             [racertay.tuple :as tup]
             [racertay.transformations :as xform]
+            [racertay.computations :as comps]
             [racertay.protocols :as p]))
 
 (deftest intersection-creation-test
@@ -65,7 +66,7 @@
     (let [r (ray/ray (tup/point 0 0 -5) (tup/vect 0 0 1))
           shape (shape/sphere)
           i (intersection 4 shape)
-          comps (prepare-computations i r)]
+          comps (comps/prepare-computations i r)]
       (is (fcmp/nearly-eq? (:intersection/t i) (:intersection/t comps)))
       (is (= (:intersection/object i) (:intersection/object comps)))
       (is (tup/tup-eq? (tup/point 0 0 -1) (:intersection/point comps)))
@@ -76,14 +77,14 @@
     (let [r (ray/ray (tup/point 0 0 -5) (tup/vect 0 0 1))
           shape (shape/sphere)
           i (intersection 4 shape)
-          comps (prepare-computations i r)]
+          comps (comps/prepare-computations i r)]
       (is (false? (:intersection/inside comps)))))
 
   (testing "The :inside attribute is true when intersection occurs inside"
     (let [r (ray/ray (tup/point 0 0 0) (tup/vect 0 0 1))
           shape (shape/sphere)
           i (intersection 1 shape)
-          comps (prepare-computations i r)]
+          comps (comps/prepare-computations i r)]
       (is (tup/tup-eq? (tup/point 0 0 1) (:intersection/point comps)))
       (is (tup/tup-eq? (tup/vect 0 0 -1) (:intersection/eyev comps)))
       (is (true? (:intersection/inside comps)))
@@ -92,9 +93,9 @@
   (testing "The :over-point attribute should offset the hit"
     (let [r (ray/ray (tup/point 0 0 -5) (tup/vect 0 0 1))
           shape (-> (shape/sphere)
-                    (p/apply-transform (xform/translation 0 0 1)))
+                    (shape/apply-transform (xform/translation 0 0 1)))
           i (intersection 5 shape)
-          comps (prepare-computations i r)]
+          comps (comps/prepare-computations i r)]
       (is (< (tup/z (:intersection/over-point comps)) (/ fcmp/epsilon 2)))
       (is (< (tup/z (:intersection/over-point comps))
              (tup/z (:intersection/point comps))))))
@@ -103,7 +104,7 @@
     (let [r (ray/ray (tup/point 0 0 0) (tup/vect 0 0 1))
           shape (shape/sphere)
           i (intersection 1 shape)
-          comps (prepare-computations i r)
+          comps (comps/prepare-computations i r)
           diff-z (- (tup/z (:intersection/over-point comps))
                     (tup/z (:intersection/point comps)))]
       (is (< diff-z (- (/ fcmp/epsilon 2))))
@@ -115,6 +116,6 @@
           shape (shape/plane)
           r (ray/ray (tup/point 0 1 -1) (tup/vect 0 (/ rad-2 -2) (/ rad-2 2)))
           i (intersection rad-2 shape)
-          comps (prepare-computations i r)]
+          comps (comps/prepare-computations i r)]
       (is (tup/tup-eq? (tup/vect 0 (/ rad-2 2) (/ rad-2 2))
                        (:intersection/reflectv comps))))))

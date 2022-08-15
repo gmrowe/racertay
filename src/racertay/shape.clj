@@ -5,9 +5,16 @@
             [racertay.intersection :as inter]
             [racertay.matrix :as matrix]
             [racertay.material :as material]
-            [racertay.protocols :as p]))
+            [racertay.protocols :as p]
+            [racertay.color :as color]))
 
 (def world-origin (tup/point 0 0 0))
+
+(defn shape-data []
+  {:id (java.util.UUID/randomUUID)
+   :transform matrix/identity-matrix
+   :inverse-transform matrix/identity-matrix
+   :material material/new-material})
 
 (defrecord ISphere
     [id transform inverse-transform material]
@@ -29,8 +36,7 @@
          (inter/intersection (/ (+ (- b) (Math/sqrt discriminant)) (* a 2)) sphere))))))
 
 (defn sphere []
-  (map->ISphere (p/shape-data)))
-
+  (map->ISphere (shape-data)))
 
 (defrecord IPlane
     [id transform inverse-transform material]
@@ -47,4 +53,26 @@
         inter/empty-intersections))))
 
 (defn plane []
-  (map->IPlane (p/shape-data)))
+  (map->IPlane (shape-data)))
+
+(defn apply-transform
+  ([obj xform]
+   (let [updated (update obj :transform (partial matrix/mat-mul xform))]
+     (assoc updated :inverse-transform (matrix/inverse (:transform updated)))))
+  
+  ([obj xform & more]
+   (reduce apply-transform obj (cons xform more))))
+
+(defn intersect [shape ray]
+  (let [local-ray (ray/transform ray (:inverse-transform shape))]
+    (p/local-intersect shape local-ray)))
+
+(defn normal-at [shape point]
+  (let [{:keys [inverse-transform]} shape
+        local-point (matrix/mat-mul-tup inverse-transform point)
+        local-normal (p/local-normal-at shape local-point)
+        world-normal (matrix/mat-mul-tup
+                      (matrix/transpose inverse-transform) local-normal)]
+    (tup/normalize
+     (tup/vect (tup/x world-normal) (tup/y world-normal) (tup/z world-normal)))))
+
