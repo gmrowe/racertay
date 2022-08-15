@@ -28,7 +28,7 @@
                1 -2 7
                0 1 1)]
       (is (nearly-eq? -2 (mat-get mat 1 1)))
-      (is (nearly-eq? 0 (mat-get mat 0 2))))))
+      (is (nearly-zero? (mat-get mat 0 2))))))
 
 (deftest matrix-eqaulity-test
   (testing  "equal matrices are equal"

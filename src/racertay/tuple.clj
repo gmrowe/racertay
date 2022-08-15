@@ -21,7 +21,7 @@
     w))
 
 (defn vect? [tup]
-  (nearly-eq? 0.0 (w tup)))
+  (nearly-zero? (w tup)))
 
 (defn point? [tup]
   (nearly-eq? 1.0 (w tup)))
