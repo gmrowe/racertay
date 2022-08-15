@@ -6,7 +6,7 @@
             [racertay.tuple :as tup]
             [racertay.light :as light]
             [racertay.pattern :as patt]
-            [racertay.sphere :as sphere]))
+            [racertay.shape :as shape]))
 
 (deftest material-creation-test
   (testing "Material has a default color"
@@ -25,7 +25,7 @@
     (is (fcmp/nearly-eq? 200.0 (:material/shininess new-material))))
 
   (testing "Material has a default reflectivity"
-    (is (fcmp/nearly-eq? 0.0 (:material/reflective new-material)))))
+    (is (fcmp/nearly-zero? (:material/reflective new-material)))))
 
 (deftest material-assoc-test
   (testing "Material color can be assoc'ed"
@@ -65,7 +65,7 @@
 (deftest lighting-test
   (let [m new-material
         surface-pos (tup/point 0 0 0)
-        object (sphere/sphere)]
+        object (shape/sphere)]
     (testing "Lighting with the eye between the light and the surface"
       (let [eyev (tup/vect 0 0 -1)
             normalv (tup/vect 0 0 -1)

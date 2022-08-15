@@ -2,8 +2,7 @@
   (:require [clojure.java.io :as io]
             [racertay.tuple :as tup]
             [racertay.color :as col]
-            [racertay.sphere :as sphere]
-            [racertay.plane :as plane]
+            [racertay.shape :as shape]
             [racertay.transformations :as xform]
             [racertay.world :as wor]
             [racertay.light :as light]
@@ -15,13 +14,13 @@
 
 
 (def floor
-  (-> (plane/plane)
+  (-> (shape/plane)
       (assoc-in [:material :material/color] (col/color 1 0.9 0.9))
       (assoc-in [:material :material/specular] 0)
       (assoc-in [:material :material/reflective] 0.25)))
 
 (def left-wall
-  (-> (plane/plane)
+  (-> (shape/plane)
       (p/apply-transform
        (xform/rotation-x (/ Math/PI 2))
        (xform/rotation-y (- (/ Math/PI 4)))
@@ -38,7 +37,7 @@
      (xform/rotation-y (/ Math/PI -4)))))
 
 (def right-wall
-  (-> (plane/plane)
+  (-> (shape/plane)
       (p/apply-transform
        (xform/rotation-x (/ Math/PI 2))
        (xform/rotation-y (/ Math/PI 4))
@@ -50,14 +49,14 @@
   (let [pattern (-> (patt/gradient-pattern col/violet col/beige)
                     (p/apply-transform (xform/scaling 0.2 0.2 0.2)
                                        (xform/rotation-z (/ Math/PI 3))))]
-    (-> (sphere/sphere)
+    (-> (shape/sphere)
         (p/apply-transform (xform/translation -0.5 1 0.5))
         (assoc-in [:material :material/pattern] pattern)
         (assoc-in [:material :material/diffuse] 0.7)
         (assoc-in [:material :material/specular] 0.3))))
 
 (def right-sphere
-  (-> (sphere/sphere)
+  (-> (shape/sphere)
       (p/apply-transform
        (xform/scaling 0.5 0.5 0.5)
        (xform/translation 1.5 0.5 -0.5))
@@ -66,7 +65,7 @@
       (assoc-in [:material :material/specular] 0.3)))
 
 (def left-sphere
-  (-> (sphere/sphere)
+  (-> (shape/sphere)
       (p/apply-transform
        (xform/scaling 0.33 0.33 0.33)
        (xform/translation -1.5 0.33 -0.75))

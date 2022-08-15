@@ -1,7 +1,7 @@
 (ns racertay.matrix-test
   (:require [clojure.test :refer :all]
             [racertay.matrix :refer :all]
-            [racertay.fcmp :refer [nearly-eq?]]
+            [racertay.fcmp :refer [nearly-eq? nearly-zero?]]
             [racertay.tuple :refer [tuple tup-eq?]]))
 
 (deftest create-matrix-test

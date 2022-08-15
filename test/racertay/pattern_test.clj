@@ -3,7 +3,7 @@
             [racertay.pattern :refer :all]
             [racertay.color :as color]
             [racertay.tuple :as tup]
-            [racertay.sphere :as sphere]
+            [racertay.shape :as shape]
             [racertay.protocols :as p]
             [racertay.transformations :as xform]
             [racertay.matrix :as matrix]))
@@ -38,21 +38,21 @@
 
 (deftest pattern-at-shape-test
   (testing "Stripes with an object transformation"
-    (let [object (-> (sphere/sphere)
+    (let [object (-> (shape/sphere)
                      (p/apply-transform (xform/scaling 2 2 2)))
           pattern (stripe-pattern color/white color/black)
           c (p/pattern-at-shape pattern object (tup/point 1.5 0 0))]
       (is (color/color-eq? color/white c))))
 
   (testing "Stripes with a pattern transformation"
-    (let [object (sphere/sphere)
+    (let [object (shape/sphere)
           pattern (-> (stripe-pattern color/white color/black)
                       (p/apply-transform (xform/scaling 2 2 2)))
           c (p/pattern-at-shape pattern object (tup/point 1.5 0 0))]
       (is (color/color-eq? color/white c))))
 
   (testing "Stripes with both object and pattern transformations"
-    (let [object (-> (sphere/sphere)
+    (let [object (-> (shape/sphere)
                      (p/apply-transform (xform/scaling 2 2 2)))
           pattern (-> (stripe-pattern color/white color/black)
                       (p/apply-transform (xform/translation 0.5 0 0)))

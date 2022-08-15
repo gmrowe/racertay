@@ -1,6 +1,5 @@
 (ns racertay.world
-  (:require [racertay.sphere :as sphere]
-            [racertay.protocols :as p]
+  (:require [racertay.protocols :as p]
             [racertay.color :as color]
             [racertay.material :as material]
             [racertay.intersection :as intersection]
@@ -42,7 +41,7 @@
   ([world comps remaining]
    (let [{:intersection/keys [object over-point reflectv]} comps
          reflective (get-in object [:material :material/reflective])]
-     (if (or (< remaining 1) (fcmp/nearly-eq? 0 reflective))
+     (if (or (< remaining 1) (fcmp/nearly-zero? reflective))
        color/black
        (calc-reflected-color world reflectv over-point reflective remaining)))))
 
@@ -65,4 +64,3 @@
    (if-let [hit (intersection/hit (intersect-world world ray))]
      (shade-hit world (intersection/prepare-computations hit ray) remaining)
      color/black)))
-

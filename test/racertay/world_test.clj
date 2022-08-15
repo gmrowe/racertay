@@ -4,8 +4,7 @@
             [racertay.light :as light]
             [racertay.tuple :as tup]
             [racertay.color :as color]
-            [racertay.sphere :as sphere]
-            [racertay.plane :as plane]
+            [racertay.shape :as shape]
             [racertay.material :as material]
             [racertay.transformations :as xform]
             [racertay.ray :as ray]
@@ -20,11 +19,11 @@
                      (assoc :material/color (color/color 0.8 1.0 0.6))
                      (assoc :material/diffuse 0.7)
                      (assoc :material/specular 0.2))]
-    (assoc (sphere/sphere) :material material)))
+    (assoc (shape/sphere) :material material)))
 
 (def sphere-2
   (let [scale (xform/scaling 0.5 0.5 0.5)]
-    (p/apply-transform (sphere/sphere) scale)))
+    (p/apply-transform (shape/sphere) scale)))
 
 (def default-world
   (-> empty-world
@@ -78,8 +77,8 @@
       (is (color/color-eq? (color/color 0.90498 0.90498 0.90498) c))))
 
   (testing "Shade hit can handle a point that is in shadow"
-    (let [s1 (sphere/sphere)
-          s2 (p/apply-transform (sphere/sphere) (xform/translation 0 0 10))
+    (let [s1 (shape/sphere)
+          s2 (p/apply-transform (shape/sphere) (xform/translation 0 0 10))
           w (-> empty-world
                 (assoc :world/light
                        (light/point-light
@@ -132,7 +131,7 @@
           comps (intersection/prepare-computations i ray)]
       (is (color/color-eq? color/black (reflected-color w comps)))))
 
-  (let [shape (-> (plane/plane)
+  (let [shape (-> (shape/plane)
                   (assoc-in [:material :material/reflective] 0.5)
                   (p/apply-transform (xform/translation 0 -1 0)))
         w (update default-world :object conj shape)
@@ -152,10 +151,10 @@
       (is (color/color-eq? color/black (reflected-color w comps 0)))))
 
   (testing "Mutually reflective surfaces does not cause infinite recursion"
-    (let [lower-mirror (-> (plane/plane)
+    (let [lower-mirror (-> (shape/plane)
                            (assoc-in [:material :material/reflective] 1.0)
                            (p/apply-transform (xform/translation 0 -1 0)))
-          upper-mirror (-> (plane/plane)
+          upper-mirror (-> (shape/plane)
                            (assoc-in [:material :material/reflective] 1.0)
                            (p/apply-transform (xform/translation 0 1 0)))
           w (-> empty-world

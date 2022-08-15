@@ -1,24 +1,23 @@
 (ns racertay.intersection-test
   (:require [clojure.test :refer :all]
             [racertay.intersection :refer :all]
-            [racertay.sphere :as sphere]
+            [racertay.shape :as shape]
             [racertay.fcmp :as fcmp]
             [racertay.ray :as ray]
             [racertay.tuple :as tup]
             [racertay.transformations :as xform]
-            [racertay.plane :as plane]
             [racertay.protocols :as p]))
 
 (deftest intersection-creation-test
   (testing "An intersection encapsulates a t an an object"
-    (let [s (sphere/sphere)
+    (let [s (shape/sphere)
           i (intersection 3.5 s)]
       (is (fcmp/nearly-eq? 3.5 (:intersection/t i)))
       (is (= s (:intersection/object i))))))
 
 (deftest intersection-aggregation-test
   (testing "Intersections should be able to be aggregated"
-    (let [s (sphere/sphere)
+    (let [s (shape/sphere)
           i1 (intersection 1 s)
           i2 (intersection 2 s)
           xs (intersections i1 i2)]
@@ -28,7 +27,7 @@
 
 (deftest intersection-hit-test
   (testing "The hit when all intersections have positive t"
-    (let [s (sphere/sphere)
+    (let [s (shape/sphere)
           i1 (intersection 1 s)
           i2 (intersection 2 s)
           xs (intersections i2 i1)
@@ -36,7 +35,7 @@
       (is (= i1 i))))
 
   (testing "The hit when some intersections have negative t"
-    (let [s (sphere/sphere)
+    (let [s (shape/sphere)
           i1 (intersection -1 s)
           i2 (intersection 1 s)
           xs (intersections i2 i1)
@@ -44,7 +43,7 @@
       (is (= i2 i))))
 
   (testing "The hit when all intersectins have negative t"
-    (let [s (sphere/sphere)
+    (let [s (shape/sphere)
           i1 (intersection -1 s)
           i2 (intersection -2 s)
           xs (intersections i2 i1)
@@ -52,7 +51,7 @@
       (is (nil? i))))
 
   (testing "The hit is always the lowest nonnegative intersection"
-    (let [s (sphere/sphere)
+    (let [s (shape/sphere)
           i1 (intersection 5 s)
           i2 (intersection 7 s)
           i3 (intersection -3 s)
@@ -64,7 +63,7 @@
 (deftest prepare-computations-test
   (testing "The state of an intersection is precomputed"
     (let [r (ray/ray (tup/point 0 0 -5) (tup/vect 0 0 1))
-          shape (sphere/sphere)
+          shape (shape/sphere)
           i (intersection 4 shape)
           comps (prepare-computations i r)]
       (is (fcmp/nearly-eq? (:intersection/t i) (:intersection/t comps)))
@@ -75,14 +74,14 @@
 
   (testing "The :inside attribute is false when intersection occurs outside"
     (let [r (ray/ray (tup/point 0 0 -5) (tup/vect 0 0 1))
-          shape (sphere/sphere)
+          shape (shape/sphere)
           i (intersection 4 shape)
           comps (prepare-computations i r)]
       (is (false? (:intersection/inside comps)))))
 
   (testing "The :inside attribute is true when intersection occurs inside"
     (let [r (ray/ray (tup/point 0 0 0) (tup/vect 0 0 1))
-          shape (sphere/sphere)
+          shape (shape/sphere)
           i (intersection 1 shape)
           comps (prepare-computations i r)]
       (is (tup/tup-eq? (tup/point 0 0 1) (:intersection/point comps)))
@@ -92,7 +91,7 @@
 
   (testing "The :over-point attribute should offset the hit"
     (let [r (ray/ray (tup/point 0 0 -5) (tup/vect 0 0 1))
-          shape (-> (sphere/sphere)
+          shape (-> (shape/sphere)
                     (p/apply-transform (xform/translation 0 0 1)))
           i (intersection 5 shape)
           comps (prepare-computations i r)]
@@ -102,7 +101,7 @@
 
   (testing "When the intersection occurs inside :over-point shold be inside"
     (let [r (ray/ray (tup/point 0 0 0) (tup/vect 0 0 1))
-          shape (sphere/sphere)
+          shape (shape/sphere)
           i (intersection 1 shape)
           comps (prepare-computations i r)
           diff-z (- (tup/z (:intersection/over-point comps))
@@ -113,7 +112,7 @@
 
   (testing "The reflection vector should be precomputed"
     (let [rad-2 (Math/sqrt 2)
-          shape (plane/plane)
+          shape (shape/plane)
           r (ray/ray (tup/point 0 1 -1) (tup/vect 0 (/ rad-2 -2) (/ rad-2 2)))
           i (intersection rad-2 shape)
           comps (prepare-computations i r)]
