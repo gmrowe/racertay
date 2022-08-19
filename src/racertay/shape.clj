@@ -14,7 +14,7 @@
   {:id (java.util.UUID/randomUUID)
    :transform matrix/identity-matrix
    :inverse-transform matrix/identity-matrix
-   :material material/new-material})
+   :material material/default-material})
 
 (defrecord ISphere
     [id transform inverse-transform material]

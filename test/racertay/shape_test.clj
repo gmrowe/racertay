@@ -20,7 +20,7 @@
 
   (testing "A sphere has a default material"
     (let [s (sphere)]
-      (is (material/material-eq? material/new-material (:material s))))))
+      (is (material/material-eq? material/default-material (:material s))))))
 
 (deftest sphere-ray-intersection-test
   (testing "A ray which intersects a sphere at two points"
@@ -153,7 +153,7 @@
 
 (deftest sphere-material-test
   (testing "A sphere's material can be changed"
-    (let [m (assoc material/new-material :material/ambient  1.0)
+    (let [m (assoc material/default-material :material/ambient  1.0)
           s (assoc (sphere) :material m)]
       (is (material/material-eq? m (:material s))))))
 

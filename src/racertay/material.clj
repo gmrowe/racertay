@@ -6,7 +6,7 @@
             [racertay.pattern :as patt]
             [racertay.protocols :as p]))
 
-(def new-material
+(def default-material
   #:material{:color color/white
              :ambient 0.1
              :diffuse 0.9

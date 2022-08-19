@@ -10,60 +10,60 @@
 
 (deftest material-creation-test
   (testing "Material has a default color"
-    (is (color/color-eq? color/white (:material/color new-material))))
+    (is (color/color-eq? color/white (:material/color default-material))))
 
   (testing "Material has default ambient attribute"
-    (is (fcmp/nearly-eq? 0.1 (:material/ambient new-material))))
+    (is (fcmp/nearly-eq? 0.1 (:material/ambient default-material))))
 
   (testing "Material has default diffuse attribute"
-    (is (fcmp/nearly-eq? 0.9 (:material/diffuse new-material))))
+    (is (fcmp/nearly-eq? 0.9 (:material/diffuse default-material))))
 
   (testing "Material has default specular attribute"
-    (is (fcmp/nearly-eq? 0.9 (:material/specular new-material))))
+    (is (fcmp/nearly-eq? 0.9 (:material/specular default-material))))
 
   (testing "Material has default shininess attribute"
-    (is (fcmp/nearly-eq? 200.0 (:material/shininess new-material))))
+    (is (fcmp/nearly-eq? 200.0 (:material/shininess default-material))))
 
   (testing "Material has a default reflectivity"
-    (is (fcmp/nearly-zero? (:material/reflective new-material)))))
+    (is (fcmp/nearly-zero? (:material/reflective default-material)))))
 
 (deftest material-assoc-test
   (testing "Material color can be assoc'ed"
     (let [new-color (color/color 0 1 1)
-          material (assoc new-material :material/color new-color)]
+          material (assoc default-material :material/color new-color)]
       (is (color/color-eq? new-color (:material/color material)))))
 
   (testing "Material ambient attribute can be assoc'ed"
     (let [new-ambient 0.5
-          material (assoc new-material :material/ambient new-ambient)]
+          material (assoc default-material :material/ambient new-ambient)]
       (is (fcmp/nearly-eq? new-ambient (:material/ambient material)))))
 
   (testing "Material diffuse attribute can be assoc'ed"
     (let [new-diffuse 0.5
-          material (assoc new-material :material/diffuse new-diffuse)]
+          material (assoc default-material :material/diffuse new-diffuse)]
       (is (fcmp/nearly-eq? new-diffuse (:material/diffuse material)))))
 
   (testing "Material specular attribute can be assoc'ed"
     (let [new-specular 0.5
-          material (assoc  new-material :material/specular new-specular)]
+          material (assoc  default-material :material/specular new-specular)]
       (is (fcmp/nearly-eq? new-specular (:material/specular material)))))
 
   (testing "Material shininess attribute can be assoc'ed"
     (let [new-shininess 300.0
-          material (assoc  new-material :material/shininess new-shininess)]
+          material (assoc  default-material :material/shininess new-shininess)]
       (is (fcmp/nearly-eq? new-shininess (:material/shininess material))))))
 
 (deftest material-eq?-test
   (testing "material-eq? returns true for two default materials"
-    (is (material-eq? new-material new-material)))
+    (is (material-eq? default-material default-material)))
 
   (testing "material-eq? returns false when material is not equal"
     (is (not
          (material-eq?
-          new-material (assoc new-material :material/shininess 300.0))))))
+          default-material (assoc default-material :material/shininess 300.0))))))
 
 (deftest lighting-test
-  (let [m new-material
+  (let [m default-material
         surface-pos (tup/point 0 0 0)
         object (shape/sphere)]
     (testing "Lighting with the eye between the light and the surface"
@@ -123,7 +123,7 @@
 
     (testing "Lighting with a pattern applied"
       (let [pattern (patt/stripe-pattern color/white color/black)
-            material (-> new-material
+            material (-> default-material
                          (assoc :material/pattern pattern)
                          (assoc :material/ambient 1)
                          (assoc :material/diffuse 0)
