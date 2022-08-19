@@ -62,6 +62,11 @@
           i (hit xs)]
       (is (= i4 i)))))
 
+(def glass-sphere
+  (-> (shape/sphere)
+      (assoc-in [:material :material/transparency] 1.0)
+      (assoc-in [:material :material/refractive-index] 1.5)))
+
 (deftest prepare-computations-test
   (testing "The state of an intersection is precomputed"
     (let [r (ray/ray (tup/point 0 0 -5) (tup/vect 0 0 1))
@@ -123,10 +128,7 @@
 
   (testing "n1 and n2 should be precomputed"
     (testing "for a multi-sphere scenario" 
-      (let [glass-sphere (-> (shape/sphere)
-                             (assoc-in [:material :material/transparency] 1.0)
-                             (assoc-in [:material :material/refractive-index] 1.5))
-            a (shape/apply-transform glass-sphere (xform/scaling 2 2 2))
+      (let [a (shape/apply-transform glass-sphere (xform/scaling 2 2 2))
             b (-> glass-sphere
                   (shape/apply-transform (xform/translation 0 0 -0.25))
                   (assoc-in [:material :material/refractive-index] 2.0))
@@ -169,5 +171,15 @@
         (testing "at intersection[5]"
           (let [comps (comps/prepare-computations (nth xs 5) ray xs)]
             (is (fcmp/nearly-eq? 1.5 (:intersection/n1 comps)))
-            (is (fcmp/nearly-eq? 1.0 (:intersection/n2 comps)))))))))
+            (is (fcmp/nearly-eq? 1.0 (:intersection/n2 comps))))))))
+
+  (testing "under-point should be precomputed"
+    (let [ray (ray/ray (tup/point 0 0 -5) (tup/vect 0 0 1))
+          shape (shape/apply-transform glass-sphere (xform/translation 0 0 1))
+          i (intersection 5 shape)
+          comps (comps/prepare-computations i ray)]
+      (is (< (/ fcmp/epsilon 2)  (tup/z (:intersection/under-point comps))))
+      (is (< (tup/z (:intersection/point comps)) (tup/z (:intersection/under-point comps)))))))
+
+
 
