@@ -11,7 +11,8 @@
             [racertay.fcmp :as fcmp]
             [racertay.intersection :as intersection]
             [racertay.computations :as comps]
-            [racertay.protocols :as p]))
+            [racertay.protocols :as p]
+            [racertay.pattern-test :refer [test-pattern]]))
 
 (def default-light (light/point-light (tup/point -10 10 -10) color/white))
 
@@ -164,3 +165,75 @@
                 (update :world/objects conj upper-mirror))
           r (ray/ray (tup/point 0 0 0) (tup/vect 0 1 0))]
       (is (some? (color-at w r))))))
+
+(deftest refracted-color-test
+  (testing "The refracted color of an opaque surface is black"
+    (let [w default-world
+          shape (nth (:world/objects w) 0)
+          r (ray/ray (tup/point 0 0 0) (tup/vect 0 1 0))
+          xs (intersection/intersections
+              (intersection/intersection 4 shape)
+              (intersection/intersection 6 shape))
+          comps (comps/prepare-computations (nth xs 0) r xs)]
+      (is (color/color-eq? color/black (refracted-color w comps)))))
+
+  (testing "The refracted color at the max recursive depth is black"
+    (let [w (-> default-world
+                (assoc-in [:world/objects 0 :material :material/transparency] 1.0)
+                (assoc-in [:world/objects 0 :material :material/refractive-index] 1.5))
+          shape (nth (:world/objects w) 0)
+          r (ray/ray (tup/point 0 0 0) (tup/vect 0 1 0))
+          xs (intersection/intersections
+              (intersection/intersection 4 shape)
+              (intersection/intersection 6 shape))
+          comps (comps/prepare-computations (nth xs 0) r xs)]
+      (is (color/color-eq? color/black (refracted-color w comps 0)))))
+
+  (testing "The refracted color under total internal reflection is black"
+    (let [w (-> default-world
+                (assoc-in [:world/objects 0 :material :material/transparency] 1.0)
+                (assoc-in [:world/objects 0 :material :material/refractive-index] 1.5))
+          shape (nth (:world/objects w) 0)
+          rad-2 (Math/sqrt 2)
+          r (ray/ray (tup/point 0 0 (/ rad-2 2)) (tup/vect 0 1 0))
+          xs (intersection/intersections
+              (intersection/intersection (/ rad-2 -2) shape)
+              (intersection/intersection (/ rad-2 2) shape))
+          comps (comps/prepare-computations (nth xs 1) r xs)]
+      (is (color/color-eq? color/black (refracted-color w comps)))))
+
+  (testing "The refracted color with the a refracted ray"
+    (let [w (-> default-world
+                (assoc-in [:world/objects 0 :material :material/ambient] 1.0)
+                (assoc-in [:world/objects 0 :material :material/pattern] test-pattern)
+                (assoc-in [:world/objects 1 :material :material/transparency] 1.0)
+                (assoc-in [:world/objects 1 :material :material/refractive-index] 1.5))
+          a (nth (:world/objects w) 0)
+          b (nth (:world/objects w) 1)
+          r (ray/ray (tup/point 0 0 0.1) (tup/vect 0 1 0))
+          xs (intersection/intersections
+              (intersection/intersection -0.9899 a)
+              (intersection/intersection -0.4899 b)
+              (intersection/intersection 0.4899 b)
+              (intersection/intersection 0.9899 a))
+          comps (comps/prepare-computations (nth xs 2) r xs)]
+      (is (color/color-eq? (color/color 0 0.99888 0.04722) (refracted-color w comps 5)))))
+
+  (testing "Shade hit with a teransparent material"
+    (let [glass-floor (-> (shape/plane)
+                          (shape/apply-transform (xform/translation 0 -1 0))
+                          (assoc-in [:material :material/transparency] 0.5)
+                          (assoc-in [:material :material/refractive-index] 1.5))
+          under-floor-ball (-> (shape/sphere)
+                               (assoc-in [:material :material/color] color/red)
+                               (assoc-in [:material :material/ambient] 0.5)
+                               (shape/apply-transform (xform/translation 0 -3.5 -0.5)))
+          w (-> default-world
+                (update :world/objects conj glass-floor)
+                (update :world/objects conj under-floor-ball))
+          rad-2 (Math/sqrt 2)
+          r (ray/ray (tup/point 0 0 -3) (tup/vect 0 (/ rad-2 -2) (/ rad-2 2)))
+          xs (intersection/intersections
+              (intersection/intersection rad-2 glass-floor))
+          comps (comps/prepare-computations (nth xs 0) r xs)]
+      (is (color/color-eq? (color/color 0.93642 0.68642 0.68642) (shade-hit w comps 5))))))

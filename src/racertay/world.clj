@@ -30,8 +30,9 @@
 
 (declare color-at)
 
-(defn- calc-reflected-color [world reflectv over-point reflective remaining]
-  (let [reflect-ray (ray/ray over-point reflectv)
+(defn- calc-reflected-color [world comps reflective remaining]
+  (let [{:intersection/keys [reflectv over-point]} comps
+        reflect-ray (ray/ray over-point reflectv)
         color (color-at world reflect-ray (dec remaining))]
     (color/color-mul-scalar color reflective)))
 
@@ -45,7 +46,35 @@
          reflective (get-in object [:material :material/reflective])]
      (if (or (< remaining 1) (fcmp/nearly-zero? reflective))
        color/black
-       (calc-reflected-color world reflectv over-point reflective remaining)))))
+       (calc-reflected-color world comps reflective remaining)))))
+
+(defn calc-refracted-color [world comps sin2-t n-ratio cos-i remaining]
+  (let [{:intersection/keys [object eyev normalv under-point]} comps
+        cos-t (Math/sqrt (- 1.0 sin2-t))
+        direction (tup/tup-sub
+                   (tup/tup-mul-scalar normalv (- (* n-ratio cos-i) cos-t))
+                   (tup/tup-mul-scalar eyev n-ratio))
+        refract-ray (ray/ray under-point direction)]
+    (color/color-mul-scalar
+     (color-at world refract-ray (dec remaining))
+     (get-in object [:material :material/transparency]))))
+
+(defn refracted-color
+  ([world comps]
+   (refracted-color world comps max-mutual-recursion-depth))
+  
+  ([world comps remaining]
+   (let [{:intersection/keys [object n1 n2 eyev normalv under-point]} comps
+         transparency (get-in object [:material :material/transparency])
+         n-ratio (/ n1 n2)
+         cos-i (tup/dot eyev normalv)
+         sin2-t (* (* n-ratio n-ratio) (- 1.0 (* cos-i cos-i)))
+         total-internal-reflection? (< 1.0 sin2-t)]
+     (if (or (< remaining 1)
+             total-internal-reflection?
+             (fcmp/nearly-zero? transparency))
+       color/black
+       (calc-refracted-color world comps sin2-t n-ratio cos-i remaining)))))
 
 (defn shade-hit
   ([world comps]
@@ -56,8 +85,9 @@
          surface  (material/lighting
                    (:material object) object (:world/light world) over-point
                    eyev normalv shadowed)
-         reflected (reflected-color world comps remaining)]
-     (color/color-add surface reflected))))
+         reflected (reflected-color world comps remaining)
+         refracted (refracted-color world comps remaining)]
+     (color/color-add surface reflected refracted))))
 
 (defn color-at
   ([world ray]
