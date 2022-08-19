@@ -119,101 +119,55 @@
           i (intersection rad-2 shape)
           comps (comps/prepare-computations i r)]
       (is (tup/tup-eq? (tup/vect 0 (/ rad-2 2) (/ rad-2 2))
-                       (:intersection/reflectv comps))))))
+                       (:intersection/reflectv comps)))))
 
-(def glass-sphere
-  (-> (shape/sphere)
-      (assoc-in [:material :material/transparency] 1.0)
-      (assoc-in [:material :material/refractive-index] 1.5)))
+  (testing "n1 and n2 should be precomputed"
+    (testing "for a multi-sphere scenario" 
+      (let [glass-sphere (-> (shape/sphere)
+                             (assoc-in [:material :material/transparency] 1.0)
+                             (assoc-in [:material :material/refractive-index] 1.5))
+            a (shape/apply-transform glass-sphere (xform/scaling 2 2 2))
+            b (-> glass-sphere
+                  (shape/apply-transform (xform/translation 0 0 -0.25))
+                  (assoc-in [:material :material/refractive-index] 2.0))
+            c (-> glass-sphere
+                  (shape/apply-transform (xform/translation 0 0 0.25))
+                  (assoc-in [:material :material/refractive-index] 2.5))
+            ray (ray/ray (tup/point 0 0 -4) (tup/vect 0 0 1))
+            xs (intersections
+                (intersection 2 a)
+                (intersection 2.75 b)
+                (intersection 3.25 c)
+                (intersection 4.25 b)
+                (intersection 5.25 c)
+                (intersection 6 a))]
+        (testing "at intersection[0]"
+          (let [comps (comps/prepare-computations (nth xs 0) ray xs)]
+            (is (fcmp/nearly-eq? 1.0 (:intersection/n1 comps)))
+            (is (fcmp/nearly-eq? 1.5 (:intersection/n2 comps)))))
 
-(deftest glass-sphere-test
-  (testing "The transform of a glass sphere is the identity-matrix"
-    (is (matrix/mat-eq? matrix/identity-matrix (:transform glass-sphere))))
+        (testing "at intersection[1]"
+          (let [comps (comps/prepare-computations (nth xs 1) ray xs)]
+            (is (fcmp/nearly-eq? 1.5 (:intersection/n1 comps)))
+            (is (fcmp/nearly-eq? 2.0 (:intersection/n2 comps)))))
 
-  (testing "The transparancy of the material for a glass sphere is 1.0"
-    (is (fcmp/nearly-eq?
-         1.0
-         (get-in glass-sphere [:material :material/transparency]))))
+        (testing "at intersection[2]"
+          (let [comps (comps/prepare-computations (nth xs 2) ray xs)]
+            (is (fcmp/nearly-eq? 2.0 (:intersection/n1 comps)))
+            (is (fcmp/nearly-eq? 2.5 (:intersection/n2 comps)))))
 
-  (testing "The refractive-index of a glass-sphere is 1.5")
-    (is (fcmp/nearly-eq?
-         1.5
-         (get-in glass-sphere [:material :material/refractive-index]))))
+        (testing "at intersection[3]"
+          (let [comps (comps/prepare-computations (nth xs 3) ray xs)]
+            (is (fcmp/nearly-eq? 2.5 (:intersection/n1 comps)))
+            (is (fcmp/nearly-eq? 2.5 (:intersection/n2 comps)))))
 
-(deftest multi-shape-intersecton-test
-  (let [a (shape/apply-transform glass-sphere (xform/scaling 2 2 2))
-        b (-> glass-sphere
-              (shape/apply-transform (xform/translation 0 0 -0.25))
-              (assoc-in [:material :material/refractive-index] 2.0))
-        c (-> glass-sphere
-              (shape/apply-transform (xform/translation 0 0 0.25))
-              (assoc-in [:material :material/refractive-index] 2.5))
-        ray (ray/ray (tup/point 0 0 -4) (tup/vect 0 0 1))
-        xs (intersections
-            (intersection 2 a)
-            (intersection 2.75 b)
-            (intersection 3.25 c)
-            (intersection 4.25 b)
-            (intersection 5.25 c)
-            (intersection 6 a))]
-    (testing "n1 and n2 are correctly calculated for the scenario"
-      (testing "at intersection[0]"
-        (let [comps (comps/prepare-computations (nth xs 0) ray xs)]
-          (is (fcmp/nearly-eq? 1.0 (:intersection/n1 comps)))
-          (is (fcmp/nearly-eq? 1.5 (:intersection/n2 comps)))))
+        (testing "at intersection[4]"
+          (let [comps (comps/prepare-computations (nth xs 4) ray xs)]
+            (is (fcmp/nearly-eq? 2.5 (:intersection/n1 comps)))
+            (is (fcmp/nearly-eq? 1.5 (:intersection/n2 comps)))))
 
-      (testing "at intersection[1]"
-        (let [comps (comps/prepare-computations (nth xs 1) ray xs)]
-          (is (fcmp/nearly-eq? 1.5 (:intersection/n1 comps)))
-          (is (fcmp/nearly-eq? 2.0 (:intersection/n2 comps)))))
-
-      (testing "at intersection[2]"
-        (let [comps (comps/prepare-computations (nth xs 2) ray xs)]
-          (is (fcmp/nearly-eq? 2.0 (:intersection/n1 comps)))
-          (is (fcmp/nearly-eq? 2.5 (:intersection/n2 comps)))))
-
-      (testing "at intersection[3]"
-        (let [comps (comps/prepare-computations (nth xs 3) ray xs)]
-          (is (fcmp/nearly-eq? 2.5 (:intersection/n1 comps)))
-          (is (fcmp/nearly-eq? 2.5 (:intersection/n2 comps)))))
-
-      (testing "at intersection[4]"
-        (let [comps (comps/prepare-computations (nth xs 4) ray xs)]
-          (is (fcmp/nearly-eq? 2.5 (:intersection/n1 comps)))
-          (is (fcmp/nearly-eq? 1.5 (:intersection/n2 comps)))))
-
-      (testing "at intersection[5]"
-        (let [comps (comps/prepare-computations (nth xs 5) ray xs)]
-          (is (fcmp/nearly-eq? 1.5 (:intersection/n1 comps)))
-          (is (fcmp/nearly-eq? 1.0 (:intersection/n2 comps))))))))
-
-#_(let [a (shape/apply-transform glass-sphere (xform/scaling 2 2 2))
-      b (-> glass-sphere
-            (shape/apply-transform (xform/translation 0 0 -0.25))
-            (assoc-in [:material :material/refractive-index] 2.0))
-      c (-> glass-sphere
-            (shape/apply-transform (xform/translation 0 0 0.25))
-            (assoc-in [:material :material/refractive-index] 2.5))
-      ray (ray/ray (tup/point 0 0 -4) (tup/vect 0 0 1))
-      xs (intersections
-          (intersection 2 a)
-          (intersection 2.75 b)
-          (intersection 3.25 c)
-          (intersection 4.25 b)
-          (intersection 5.25 c)
-          (intersection 6 a))]
-  (let [intersection (nth xs 5)]
-    (let [f (fn [result i]
-              (let [{:keys [containers]} result
-                    hit? (= i intersection)
-                    n1 (when hit?
-                         (or (get-in (last containers) [:material :material/refractive-index]) 1.0))
-                    object (:intersection/object i)
-                    c (if (some #{object} containers) (vec (remove #{object} containers)) (conj containers object))
-                    n2  (when hit?
-                          (or (get-in (last c) [:material :material/refractive-index]) 1.0))]
-                (if (and n1 n2)
-                  (reduced {:n1 n1 :n2 n2})
-                  {:containers c})))]
-      (reduce f {:containers []} xs))))
+        (testing "at intersection[5]"
+          (let [comps (comps/prepare-computations (nth xs 5) ray xs)]
+            (is (fcmp/nearly-eq? 1.5 (:intersection/n1 comps)))
+            (is (fcmp/nearly-eq? 1.0 (:intersection/n2 comps)))))))))
 
