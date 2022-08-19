@@ -41,14 +41,14 @@
     (let [object (-> (shape/sphere)
                      (shape/apply-transform (xform/scaling 2 2 2)))
           pattern (stripe-pattern color/white color/black)
-          c (p/pattern-at-shape pattern object (tup/point 1.5 0 0))]
+          c (pattern-at-shape pattern object (tup/point 1.5 0 0))]
       (is (color/color-eq? color/white c))))
 
   (testing "Stripes with a pattern transformation"
     (let [object (shape/sphere)
           pattern (-> (stripe-pattern color/white color/black)
                       (shape/apply-transform (xform/scaling 2 2 2)))
-          c (p/pattern-at-shape pattern object (tup/point 1.5 0 0))]
+          c (pattern-at-shape pattern object (tup/point 1.5 0 0))]
       (is (color/color-eq? color/white c))))
 
   (testing "Stripes with both object and pattern transformations"
@@ -56,7 +56,7 @@
                      (shape/apply-transform (xform/scaling 2 2 2)))
           pattern (-> (stripe-pattern color/white color/black)
                       (shape/apply-transform (xform/translation 0.5 0 0)))
-          c (p/pattern-at-shape pattern object (tup/point 2.5 0 0))]
+          c (pattern-at-shape pattern object (tup/point 2.5 0 0))]
       (is (color/color-eq? color/white c)))))
 
 (deftest gradient-pattern-test

@@ -4,6 +4,10 @@
             [racertay.matrix :as matrix]
             [racertay.protocols :as p]))
 
+(def pattern-data
+  {:transform matrix/identity-matrix
+   :inverse-transform matrix/identity-matrix})
+
 (defrecord IStripePattern
     [transform inverse-transform a b]
   p/Pattern
@@ -14,7 +18,7 @@
 
 (defn stripe-pattern [color-a color-b]
   (map->IStripePattern
-   (merge p/pattern-data {:a color-a :b color-b})))
+   (merge pattern-data {:a color-a :b color-b})))
 
 (defrecord IGradientPattern
     [transform inverse-transform a b]
@@ -28,7 +32,7 @@
 
 (defn gradient-pattern [color-a color-b]
   (map->IGradientPattern
-   (merge p/pattern-data {:a color-a :b color-b})))
+   (merge pattern-data {:a color-a :b color-b})))
 
 (defrecord IRingPattern
     [transform inverse-transform a b]
@@ -43,7 +47,7 @@
 
 (defn ring-pattern [color-a color-b]
   (map->IRingPattern
-   (merge p/pattern-data {:a color-a :b color-b})))
+   (merge pattern-data {:a color-a :b color-b})))
 
 (defrecord ICheckerPattern
     [transform inverse-transform a b]
@@ -58,7 +62,7 @@
 
 (defn checker-pattern [color-a color-b]
   (map->ICheckerPattern
-   (merge p/pattern-data {:a color-a :b color-b})))
+   (merge pattern-data {:a color-a :b color-b})))
 
 (defrecord INestedChecker
     [transform inverse-transform a b]
@@ -74,4 +78,9 @@
 
 (defn nested-checker-pattern [pattern-a pattern-b]
   (map->INestedChecker
-   (merge p/pattern-data {:a pattern-a :b pattern-b})))
+   (merge pattern-data {:a pattern-a :b pattern-b})))
+
+(defn pattern-at-shape [pattern shape point]
+  (let [obj-point (matrix/mat-mul-tup (:inverse-transform shape) point)
+        pat-point (matrix/mat-mul-tup (:inverse-transform pattern) obj-point)]
+    (p/pattern-at pattern pat-point)))
