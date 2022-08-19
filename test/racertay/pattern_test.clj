@@ -8,6 +8,45 @@
             [racertay.transformations :as xform]
             [racertay.matrix :as matrix]))
 
+(defrecord ITestPattern
+    [transform inverse-transform]
+  p/Pattern
+  (pattern-at [pattern point]
+    (color/color (tup/x point) (tup/y point) (tup/z point))))
+
+(def test-pattern
+  (map->ITestPattern pattern-data))
+
+(deftest test-pattern-test
+  (testing "A test-pattern has a default transfomation"
+    (is (matrix/mat-eq? matrix/identity-matrix (:transform test-pattern))))
+  
+  (testing "A transformation can be assigned to a test pattern"
+    (let [xform (xform/translation 1 2 3)
+          pattern (shape/apply-transform test-pattern xform)]
+      (is (matrix/mat-eq? xform (:transform pattern)))))
+
+  (testing "An object-transfomation can be applied to a test-pattern"
+    (let [shape (shape/apply-transform (shape/sphere) (xform/scaling 2 2 2))
+          pattern test-pattern]
+      (is (color/color-eq?
+           (color/color 1 1.5 2)
+           (pattern-at-shape pattern shape (tup/point 2 3 4))))))
+
+  (testing "A pattern transformation can be applied to a test-pattern"
+    (let [shape (shape/sphere)
+          pattern (shape/apply-transform test-pattern (xform/scaling 2 2 2))]
+      (is (color/color-eq?
+           (color/color 1 1.5 2)
+           (pattern-at-shape pattern shape (tup/point 2 3 4))))))
+
+  (testing "A test pattern can apply both object and pattern transfomation"
+    (let [shape (shape/apply-transform (shape/sphere) (xform/scaling 2 2 2))
+          pattern (shape/apply-transform test-pattern (xform/translation 0.5 1 1.5))]
+      (is (color/color-eq?
+           (color/color 0.75 0.5 0.25)
+           (pattern-at-shape pattern shape (tup/point 2.5 3 3.5)))))))
+
 (deftest stripe-pattern-creation-test
   (testing "A stripe pattern is created with two colors"
     (let [patt (stripe-pattern color/white color/black)]
