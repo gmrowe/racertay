@@ -25,7 +25,13 @@
     (is (fcmp/nearly-eq? 200.0 (:material/shininess default-material))))
 
   (testing "Material has a default reflectivity"
-    (is (fcmp/nearly-zero? (:material/reflective default-material)))))
+    (is (fcmp/nearly-zero? (:material/reflective default-material))))
+
+  (testing "Material has a default transparancy"
+    (is (fcmp/nearly-zero? (:material/transparency default-material))))
+
+  (testing "Material has a default refractive-index"
+    (is (fcmp/nearly-eq? 1.0 (:material/refractive-index default-material)))))
 
 (deftest material-assoc-test
   (testing "Material color can be assoc'ed"
