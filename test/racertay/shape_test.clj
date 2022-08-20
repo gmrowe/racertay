@@ -193,3 +193,79 @@
       (is (= 1 (count xs)))
       (is (fcmp/nearly-eq? 1 (:intersection/t (nth xs 0))))
       (is (= p (:intersection/object (nth xs 0)))))))
+
+(deftest cube-local-intersect-test
+  (testing "Ray intersects cube"
+    (letfn [ (ray-intersects-cube-test
+              [ray-origin ray-direction expected-t1 expected-t2]
+              (let [c (shape/cube)
+                    r (ray/ray ray-origin ray-direction)
+                    xs (p/local-intersect c r)]
+                (is (fcmp/nearly-eq? expected-t1 (:intersection/t (nth xs 0)))
+                    "The 1st intercept.")
+                (is (fcmp/nearly-eq? expected-t2 (:intersection/t (nth xs 1)))
+                    "The 2nd intercept.")))]
+      (testing "in the +x face"
+        (ray-intersects-cube-test (tup/point 5 0.5 0) (tup/vect -1 0 0) 4 6))
+      (testing "in the -x face"
+        (ray-intersects-cube-test (tup/point -5 0.5 0) (tup/vect 1 0 0) 4 6))
+      (testing "in the +y face"
+        (ray-intersects-cube-test (tup/point 0.5 5 0) (tup/vect 0 -1 0) 4 6))
+      (testing "in the -y face"
+        (ray-intersects-cube-test (tup/point 0.5 -5 0) (tup/vect 0 1 0) 4 6))
+      (testing "in the +z face"
+        (ray-intersects-cube-test (tup/point 0.5 0 -5) (tup/vect 0 0 1) 4 6))
+      (testing "in the -z face"
+        (ray-intersects-cube-test (tup/point 0.5 0 5) (tup/vect 0 0 -1) 4 6))
+      (testing "from inside the cube"
+        (ray-intersects-cube-test (tup/point 0 0.5 0) (tup/vect 0 0 1) -1 1))))
+
+  (testing "Ray misses cube"
+    (letfn [(ray-misses-cube-test
+              [ray-origin ray-direction]
+              (let [c (shape/cube)
+                    r (ray/ray ray-origin ray-direction)
+                    xs (p/local-intersect c r)]
+                (is (zero? (count xs)))))]
+      (testing "from the -x direction"
+        (ray-misses-cube-test (tup/point -2 0 0) (tup/vect 0.2673 0.5345 0.8018)))
+      (testing "from the -y direction"
+        (ray-misses-cube-test (tup/point 0 -2 0) (tup/vect 0.8018 0.2673 0.5345)))
+      (testing "from the -z direction"
+        (ray-misses-cube-test (tup/point 0 0 -2) (tup/vect 0.5345 0.8018 0.2673)))
+      (testing "parallel to the +x face"
+        (ray-misses-cube-test (tup/point 2 0 2) (tup/vect 0 0 -1)))
+      (testing "parallel to the +z face"
+        (ray-misses-cube-test (tup/point 0 2 2) (tup/vect 0 -1 0)))
+      (testing "parellel to the +y face"
+        (ray-misses-cube-test (tup/point 2 2 0) (tup/vect -1 0 0))))))
+
+(deftest cube-local-normal-at-test
+  (testing "Normal on surface"
+    (letfn [(normal-on-cube-surface-test
+              [point expected-normal]
+              (is (tup/tup-eq?
+                   expected-normal (p/local-normal-at (shape/cube) point))))]
+      (testing "on +x face"
+        (normal-on-cube-surface-test (tup/point 1 0.5 -0.8) (tup/vect 1 0 0)))
+      (testing "on -x face"
+        (normal-on-cube-surface-test (tup/point -1 0.2 -0.9) (tup/vect -1 0 0)))
+      (testing "on +y face"
+        (normal-on-cube-surface-test (tup/point -0.4 1 -0.1) (tup/vect 0 1 0)))
+      (testing "on -y face"
+        (normal-on-cube-surface-test (tup/point -0.26 -1 0.16) (tup/vect 0 -1 0)))
+      (testing "on +z face"
+        (normal-on-cube-surface-test (tup/point 0.4 -0.31 1) (tup/vect 0 0 1)))
+      (testing "on -z face"
+        (normal-on-cube-surface-test (tup/point 0.042 0.7 -1) (tup/vect 0 0 -1)))
+      (testing "on +x+y+z corner"
+        (normal-on-cube-surface-test (tup/point 1 1 1) (tup/vect 1 0 0)))
+      (testing "on -x-y-z corner"
+        (normal-on-cube-surface-test (tup/point -1 -1 -1) (tup/vect -1 0 0))))))
+
+(deftest cube-creation-test
+  (testing "A cube has a default transform"
+    (is (matrix/mat-eq? matrix/identity-matrix (:transform (shape/cube)))))
+
+  (testing "A cube has default material"
+    (is (material/material-eq? material/default-material (:material (shape/cube))))))
