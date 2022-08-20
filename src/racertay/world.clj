@@ -48,7 +48,7 @@
        color/black
        (calc-reflected-color world comps reflective remaining)))))
 
-(defn calc-refracted-color [world comps sin2-t n-ratio cos-i remaining]
+(defn- calc-refracted-color [world comps sin2-t n-ratio cos-i remaining]
   (let [{:intersection/keys [object eyev normalv under-point]} comps
         cos-t (Math/sqrt (- 1.0 sin2-t))
         direction (tup/tup-sub
