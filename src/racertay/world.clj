@@ -81,13 +81,20 @@
    (shade-hit world comps max-mutual-recursion-depth))
   ([world comps remaining]
    (let [{:intersection/keys [object point eyev normalv over-point]} comps
+         {:material/keys [reflective transparency]} (:material object)
          shadowed (shadowed? world over-point)
          surface  (material/lighting
                    (:material object) object (:world/light world) over-point
                    eyev normalv shadowed)
          reflected (reflected-color world comps remaining)
          refracted (refracted-color world comps remaining)]
-     (color/color-add surface reflected refracted))))
+     (if (and (pos? transparency) (pos? reflective))
+       (let [reflectance (intersection/schlick comps)]
+         (color/color-add
+          surface
+          (color/color-mul-scalar reflected reflectance)
+          (color/color-mul-scalar refracted (- 1.0 reflectance))))
+       (color/color-add surface reflected refracted)))))
 
 (defn color-at
   ([world ray]

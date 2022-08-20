@@ -236,4 +236,24 @@
           xs (intersection/intersections
               (intersection/intersection rad-2 glass-floor))
           comps (comps/prepare-computations (nth xs 0) r xs)]
-      (is (color/color-eq? (color/color 0.93642 0.68642 0.68642) (shade-hit w comps 5))))))
+      (is (color/color-eq? (color/color 0.93642 0.68642 0.68642) (shade-hit w comps 5)))))
+
+  (testing "Shade hit with a reflective, transparent surface"
+    (let [glass-floor (-> (shape/plane)
+                          (shape/apply-transform (xform/translation 0 -1 0))
+                          (assoc-in [:material :material/reflective] 0.5)
+                          (assoc-in [:material :material/transparency] 0.5)
+                          (assoc-in [:material :material/refractive-index] 1.5))
+          ball-under-floor (-> (shape/sphere)
+                               (assoc-in [:material :material/color] color/red)
+                               (assoc-in [:material :material/ambient] 0.5)
+                               (shape/apply-transform (xform/translation 0 -3.5 -0.5)))
+          w (-> default-world
+                (update :world/objects conj glass-floor)
+                (update :world/objects conj ball-under-floor))
+          rad-2 (Math/sqrt 2)
+          r (ray/ray (tup/point 0 0 -3) (tup/vect 0 (/ rad-2 -2) (/ rad-2 2)))
+          xs (intersection/intersections
+              (intersection/intersection rad-2 glass-floor))
+          comps (comps/prepare-computations (nth xs 0) r xs)]
+      (is (color/color-eq? (color/color 0.93391 0.69643 0.69243) (shade-hit w comps 5))))))
