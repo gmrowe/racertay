@@ -181,5 +181,30 @@
       (is (< (/ fcmp/epsilon 2)  (tup/z (:intersection/under-point comps))))
       (is (< (tup/z (:intersection/point comps)) (tup/z (:intersection/under-point comps)))))))
 
+(deftest schlick-approximation-test
+  (testing "The shlick approximation under total internal reflection is 1.0"
+    (let [shape glass-sphere
+          rad-2 (Math/sqrt 2)
+          r (ray/ray (tup/point 0 0 (/ rad-2 2)) (tup/vect 0 1 0))
+          xs (intersections
+              (intersection (/ rad-2 -2) shape)
+              (intersection (/ rad-2 2) shape))
+          comps (comps/prepare-computations (nth xs 1) r xs)]
+      (is (fcmp/nearly-eq? 1.0 (schlick comps)))))
 
+  (testing "The schlick approximation from a perpendicular viewing angle"
+    (let [shape glass-sphere
+          r (ray/ray (tup/point 0 0 0) (tup/vect 0 1 0))
+          xs (intersections
+              (intersection -1 shape)
+              (intersection 1 shape))
+          comps (comps/prepare-computations (nth xs 1) r xs)]
+      (is (fcmp/nearly-eq? 0.04 (schlick comps)))))
 
+  (testing "The schlick approximation with a small angle and n2 > n1"
+    (let [shape glass-sphere
+          r (ray/ray (tup/point 0 0.99 -2) (tup/vect 0 0 1))
+          xs (intersections
+              (intersection 1.8589 shape))
+          comps (comps/prepare-computations (nth xs 0) r xs)]
+      (is (fcmp/nearly-eq? 0.48873 (schlick comps))))))
