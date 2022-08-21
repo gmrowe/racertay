@@ -2,7 +2,7 @@
   (:require [clojure.test :refer :all]
             [clojure.string :as s]
             [racertay.canvas :refer :all]
-            [racertay.color :refer [color color-eq? black]]))
+            [racertay.color :as color]))
 
 (deftest canvas-creation-test
   (testing "a canvas has a width and a height"
@@ -14,20 +14,20 @@
     (let [c (canvas 10 20)
           pixels (:canvas/pixels c)]
       (is (= 200 (count pixels)))
-      (is (every? #(color-eq? black %) pixels))))
+      (is (every? #(color/color-eq? color/black %) pixels))))
 
   (testing "a canvas can be initialized with an arbitrary color"
-    (let [cyan (color 0 1 1)
+    (let [cyan (color/color 0 1 1)
           c (canvas 10 20 cyan)
           pixels (:canvas/pixels c)]
-      (is (every? #(color-eq? cyan %) pixels)))))
+      (is (every? #(color/color-eq? cyan %) pixels)))))
 
 (deftest canvas-writing-test
   (testing "pixels of a canvas can be written to"
     (let [init-canvas (canvas 10 20)
-          red (color 1 0 0)
+          red (color/color 1 0 0)
           c (write-pixel init-canvas 2 3 red)]
-      (is (color-eq? red (pixel-at c 2 3))))))
+      (is (color/color-eq? red (pixel-at c 2 3))))))
 
 (deftest canvas-to-ppm-test
   (let [header-line-count 3]
@@ -38,9 +38,9 @@
         (is (= ["P3" "5 3" "255"] header))))
 
     (testing "canvas-to-ppm outputs proper pixel data"
-      (let [c1 (color 1.5 0 0)
-            c2 (color 0 0.5 0)
-            c3 (color -0.5 0 1)
+      (let [c1 (color/color 1.5 0 0)
+            c2 (color/color 0 0.5 0)
+            c3 (color/color -0.5 0 1)
             c (-> (canvas 5 3)
                   (write-pixel 0 0 c1)
                   (write-pixel 2 1 c2)
@@ -55,7 +55,7 @@
                pixel-data))))
 
     (testing "long lines in ppm file should be split"
-      (let [c (canvas 10 2 (color 1.0 0.8 0.6))
+      (let [c (canvas 10 2 (color/color 1.0 0.8 0.6))
             ppm (canvas-to-ppm c)
             pixel-data (->> (s/split-lines ppm)
                             (drop header-line-count)    ; drop the header
@@ -79,7 +79,7 @@
              (take (count expected-header) (canvas-to-p6-ppm c))))))
 
   (testing "canvas-to-p6-ppm outputs correct pixel data"
-    (let [c (canvas 2 1 (color 1.5 0.5 -0.1))
+    (let [c (canvas 2 1 (color/color 1.5 0.5 -0.1))
           bytes-per-pixel 3
           pixel-byte-count (* bytes-per-pixel (count (:canvas/pixels c)))
           ppm (vec (canvas-to-p6-ppm c))
