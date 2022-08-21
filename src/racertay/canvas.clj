@@ -1,9 +1,9 @@
 (ns racertay.canvas
   (:require [clojure.string :as s]
-            [racertay.color :refer [color black]]))
+            [racertay.color :as color]))
 
 (defn canvas
-  ([w h] (canvas w h black))
+  ([w h] (canvas w h color/black))
   ([w h color]
    #:canvas{:width w
             :height h
