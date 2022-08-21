@@ -114,3 +114,31 @@
   (map->ICube (shape-data)))
 
 
+(defrecord ICylinder
+    [id transform inverse-transform material]
+  p/Shape
+  (local-normal-at [cylinder local-point]
+    (tup/vect (tup/x local-point) 0.0 (tup/z local-point)))
+
+  (local-intersect [cylinder local-ray]
+    (let [{:ray/keys [origin direction]} local-ray
+          direction-x (tup/x direction)
+          direction-z (tup/z direction)
+          a (+ (* direction-x direction-x) (* direction-z direction-z))]
+      (if (fcmp/nearly-zero? a)
+        inter/empty-intersections
+        (let [origin-x (tup/x origin)
+              origin-z (tup/z origin)
+              b (+ (* 2.0 origin-x direction-x) (* 2.0 origin-z direction-z))
+              c (+ (* origin-x origin-x) (* origin-z origin-z) -1.0)
+              discriminant (- (* b b) (* 4.0 a c))]
+          (if (neg? discriminant)
+            inter/empty-intersections
+            (let [t0 (/ (- (- b) (Math/sqrt discriminant)) (* 2.0 a))
+                  t1 (/ (+ (- b) (Math/sqrt discriminant)) (* 2.0 a))]
+              (inter/intersections
+               (inter/intersection t0 cylinder)
+               (inter/intersection t1 cylinder)))))))))
+
+(defn cylinder []
+  (map->ICylinder (shape-data)))

@@ -269,3 +269,50 @@
 
   (testing "A cube has default material"
     (is (material/material-eq? material/default-material (:material (shape/cube))))))
+
+(deftest cylinder-local-intersect-test
+  (testing "A ray that misses a cylinder"
+    (letfn [(ray-misses-cylinder-test
+              [origin direction]
+              (let [cyl (shape/cylinder)
+                    d (tup/normalize direction)
+                    xs (p/local-intersect cyl (ray/ray origin d))]
+                (is (zero? (count xs)))))]
+      (testing "on outside surface - parallel to y-axis"
+        (ray-misses-cylinder-test (tup/point 1 0 0) (tup/vect 0 1 0)))
+      (testing "inside cylineder - parallel to y-axis"
+        (ray-misses-cylinder-test (tup/point 0 0 0) (tup/vect 0 1 0)))
+      (testing "outside cylinder - askew from all axes"
+        (ray-misses-cylinder-test (tup/point 0 0 -5) (tup/vect 1 1 1)))))
+
+  (testing "A ray that strikes a cylinder"
+    (letfn [(ray-strikes-cylinder-test
+              [origin direction expected-t1 expected-t2]
+              (let [cyl (shape/cylinder)
+                    d (tup/normalize direction)
+                    xs (p/local-intersect cyl (ray/ray origin d))]
+                (is (fcmp/nearly-eq?
+                     expected-t1 (:intersection/t (nth xs 0))) "The first intersect")
+                (is (fcmp/nearly-eq?
+                     expected-t2 (:intersection/t (nth xs 1))) "The second intersect")))]
+      (testing "on a tangent"
+        (ray-strikes-cylinder-test (tup/point 1 0 -5) (tup/vect 0 0 1) 5 5))
+      (testing "perpendicularly through center"
+        (ray-strikes-cylinder-test (tup/point 0 0 -5) (tup/vect 0 0 1) 4 6))
+      (testing "at an angle"
+        (ray-strikes-cylinder-test (tup/point 0.5 0 -5) (tup/vect 0.1 1 1) 6.80798 7.08872)))))
+
+(deftest cylinder-local-normal-test
+  (testing "Normal vector on a cylinder"
+    (letfn [(normal-on-cylinder-surface-test
+              [point expected-normal]
+              (is (tup/tup-eq?
+                   expected-normal (p/local-normal-at (shape/cylinder) point))))]
+      (testing "at a +x point"
+        (normal-on-cylinder-surface-test (tup/point 1 0 0) (tup/vect 1 0 0)))
+      (testing "at a -z point"
+        (normal-on-cylinder-surface-test (tup/point 0 5 -1) (tup/vect 0 0 -1)))
+      (testing "at a +z point"
+        (normal-on-cylinder-surface-test (tup/point 0 -2 1) (tup/vect 0 0 1)))
+      (testing "at a -x point"
+        (normal-on-cylinder-surface-test (tup/point -1 1 0) (tup/vect -1 0 0))))))
