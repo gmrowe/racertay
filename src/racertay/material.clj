@@ -16,9 +16,6 @@
              :transparency 0.0
              :refractive-index 1.0})
 
-(defn assoc-shininess [material new-shininess]
-  (assoc material :shininess new-shininess))
-
 (defn material-eq?
   [mat1 mat2]
   (and
