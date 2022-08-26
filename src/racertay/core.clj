@@ -26,16 +26,6 @@
        (xform/rotation-y (- (/ Math/PI 4)))
        (xform/translation 0 0 5))))
 
-(defn chevron-pattern [color-a color-b]
-  (let [half-scale (xform/scaling 0.50 0.50 0.50)
-        horizontal (xform/rotation-y (/ Math/PI 2))
-        pattern (patt/stripe-pattern color-a color-b)]
-    (xform/apply-transform
-     (patt/nested-checker-pattern
-      (xform/apply-transform pattern half-scale horizontal)
-      (xform/apply-transform pattern half-scale))
-     (xform/rotation-y (/ Math/PI -4)))))
-
 (def right-wall
   (-> (shape/plane)
       (xform/apply-transform
@@ -43,7 +33,7 @@
        (xform/rotation-y (/ Math/PI 4))
        (xform/translation 0 0 5))
       (assoc-in [:material :material/pattern]
-                (chevron-pattern col/orange col/green))))
+                (patt/chevron-pattern col/orange col/green))))
 
 (def left-sphere
   (-> (shape/sphere)
@@ -90,8 +80,8 @@
   (light/point-light
    (tup/point -10 10 -10) col/white))
 
-(def width 400)
-(def height 300)
+(def width 100)
+(def height 50)
 (def field-of-view (/ Math/PI 3))
 (def camera-location (tup/point 0 1.5 -5))
 (def canvas-location (tup/point 0 1 0))

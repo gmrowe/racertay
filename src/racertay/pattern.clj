@@ -2,6 +2,7 @@
   (:require [racertay.color :as color]
             [racertay.tuple :as tup]
             [racertay.matrix :as matrix]
+            [racertay.transformations :as xform]
             [racertay.protocols :as p]))
 
 (def pattern-data
@@ -84,3 +85,13 @@
   (let [obj-point (matrix/mat-mul-tup (:inverse-transform shape) point)
         pat-point (matrix/mat-mul-tup (:inverse-transform pattern) obj-point)]
     (p/pattern-at pattern pat-point)))
+
+(defn chevron-pattern [color-a color-b]
+  (let [half-scale (xform/scaling 0.50 0.50 0.50)
+        horizontal (xform/rotation-y (/ Math/PI 2))
+        pattern (stripe-pattern color-a color-b)]
+    (xform/apply-transform
+     (nested-checker-pattern
+      (xform/apply-transform pattern half-scale horizontal)
+      (xform/apply-transform pattern half-scale))
+     (xform/rotation-y (/ Math/PI -4)))))
