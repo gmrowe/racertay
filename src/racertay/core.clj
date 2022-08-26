@@ -78,13 +78,20 @@
       (assoc-in [:material :material/refractive-index] 2.41)
       (assoc-in [:material :material/reflective] 0.7)))
 
+(def cylinder
+  (-> (shape/cylinder)
+      (shape/apply-transform
+       (xform/scaling 0.5 0.5 1.0)
+       (xform/translation -0.15 -0.8 -1.2))
+      (assoc-in [:material :material/color] col/brown)))
+
 
 (def light
   (light/point-light
    (tup/point -10 10 -10) col/white))
 
-(def width 800)
-(def height 600)
+(def width 400)
+(def height 300)
 (def field-of-view (/ Math/PI 3))
 (def camera-location (tup/point 0 1.5 -5))
 (def canvas-location (tup/point 0 1 0))
@@ -103,7 +110,8 @@
       (update :world/objects conj right-wall)
       (update :world/objects conj middle-sphere)
       (update :world/objects conj right-cube)
-      (update :world/objects conj left-sphere)))
+      (update :world/objects conj left-sphere)
+      (update :world/objects conj cylinder)))
 
 (defn write-canvas-to-ppm-file [canvas filename]
   (let [ppm-bytes (canv/canvas-to-p6-ppm canvas)]
