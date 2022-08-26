@@ -21,7 +21,7 @@
 
 (def left-wall
   (-> (shape/plane)
-      (shape/apply-transform
+      (xform/apply-transform
        (xform/rotation-x (/ Math/PI 2))
        (xform/rotation-y (- (/ Math/PI 4)))
        (xform/translation 0 0 5))))
@@ -30,15 +30,15 @@
   (let [half-scale (xform/scaling 0.50 0.50 0.50)
         horizontal (xform/rotation-y (/ Math/PI 2))
         pattern (patt/stripe-pattern color-a color-b)]
-    (shape/apply-transform
+    (xform/apply-transform
      (patt/nested-checker-pattern
-      (shape/apply-transform pattern half-scale horizontal)
-      (shape/apply-transform pattern half-scale))
+      (xform/apply-transform pattern half-scale horizontal)
+      (xform/apply-transform pattern half-scale))
      (xform/rotation-y (/ Math/PI -4)))))
 
 (def right-wall
   (-> (shape/plane)
-      (shape/apply-transform
+      (xform/apply-transform
        (xform/rotation-x (/ Math/PI 2))
        (xform/rotation-y (/ Math/PI 4))
        (xform/translation 0 0 5))
@@ -47,7 +47,7 @@
 
 (def left-sphere
   (-> (shape/sphere)
-      (shape/apply-transform
+      (xform/apply-transform
        (xform/scaling 0.33 0.33 0.33)
        (xform/translation -1.5 0.33 -0.75))
       (assoc-in [:material :material/color] col/dark-blue)
@@ -57,17 +57,17 @@
 
 (def middle-sphere
   (let [pattern (-> (patt/stripe-pattern col/violet col/white)
-                    (shape/apply-transform (xform/scaling 0.2 0.2 0.2)
+                    (xform/apply-transform (xform/scaling 0.2 0.2 0.2)
                                        (xform/rotation-z (/ Math/PI 3))))]
     (-> (shape/sphere)
-        (shape/apply-transform (xform/translation -0.5 1 0.5))
+        (xform/apply-transform (xform/translation -0.5 1 0.5))
         (assoc-in [:material :material/pattern] pattern)
         (assoc-in [:material :material/diffuse] 0.7)
         (assoc-in [:material :material/specular] 0.3))))
 
 (def right-cube
   (-> (shape/cube)
-      (shape/apply-transform
+      (xform/apply-transform
        (xform/scaling 0.25 1.5 0.25)
        (xform/translation 1.5 0.5 -0.5))
       (assoc-in [:material :material/color] col/black)
@@ -80,7 +80,7 @@
 
 (def cylinder
   (-> (shape/cylinder)
-      (shape/apply-transform
+      (xform/apply-transform
        (xform/scaling 0.5 0.5 1.0)
        (xform/translation -0.15 -0.8 -1.2))
       (assoc-in [:material :material/color] col/brown)))
@@ -99,7 +99,7 @@
 
 (def camera
   (-> (cam/camera width height field-of-view)
-      (cam/apply-transform
+      (xform/apply-transform
        (xform/view-transform camera-location canvas-location up))))
 
 (def world

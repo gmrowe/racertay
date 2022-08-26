@@ -25,7 +25,7 @@
 
 (def sphere-2
   (let [scale (xform/scaling 0.5 0.5 0.5)]
-    (shape/apply-transform (shape/sphere) scale)))
+    (xform/apply-transform (shape/sphere) scale)))
 
 (def default-world
   (-> empty-world
@@ -80,7 +80,7 @@
 
   (testing "Shade hit can handle a point that is in shadow"
     (let [s1 (shape/sphere)
-          s2 (shape/apply-transform (shape/sphere) (xform/translation 0 0 10))
+          s2 (xform/apply-transform (shape/sphere) (xform/translation 0 0 10))
           w (-> empty-world
                 (assoc :world/light
                        (light/point-light
@@ -135,7 +135,7 @@
 
   (let [shape (-> (shape/plane)
                   (assoc-in [:material :material/reflective] 0.5)
-                  (shape/apply-transform (xform/translation 0 -1 0)))
+                  (xform/apply-transform (xform/translation 0 -1 0)))
         w (update default-world :object conj shape)
         rad-2 (Math/sqrt 2)
         ray (ray/ray (tup/point 0 0 -3) (tup/vect 0 (/ rad-2 -2) (/ rad-2 2)))
@@ -155,10 +155,10 @@
   (testing "Mutually reflective surfaces does not cause infinite recursion"
     (let [lower-mirror (-> (shape/plane)
                            (assoc-in [:material :material/reflective] 1.0)
-                           (shape/apply-transform (xform/translation 0 -1 0)))
+                           (xform/apply-transform (xform/translation 0 -1 0)))
           upper-mirror (-> (shape/plane)
                            (assoc-in [:material :material/reflective] 1.0)
-                           (shape/apply-transform (xform/translation 0 1 0)))
+                           (xform/apply-transform (xform/translation 0 1 0)))
           w (-> empty-world
                 (assoc :world/light (light/point-light (tup/point 0 0 0) color/white))
                 (update :world/objects conj lower-mirror)
@@ -221,13 +221,13 @@
 
   (testing "Shade hit with a teransparent material"
     (let [glass-floor (-> (shape/plane)
-                          (shape/apply-transform (xform/translation 0 -1 0))
+                          (xform/apply-transform (xform/translation 0 -1 0))
                           (assoc-in [:material :material/transparency] 0.5)
                           (assoc-in [:material :material/refractive-index] 1.5))
           under-floor-ball (-> (shape/sphere)
                                (assoc-in [:material :material/color] color/red)
                                (assoc-in [:material :material/ambient] 0.5)
-                               (shape/apply-transform (xform/translation 0 -3.5 -0.5)))
+                               (xform/apply-transform (xform/translation 0 -3.5 -0.5)))
           w (-> default-world
                 (update :world/objects conj glass-floor)
                 (update :world/objects conj under-floor-ball))
@@ -240,14 +240,14 @@
 
   (testing "Shade hit with a reflective, transparent surface"
     (let [glass-floor (-> (shape/plane)
-                          (shape/apply-transform (xform/translation 0 -1 0))
+                          (xform/apply-transform (xform/translation 0 -1 0))
                           (assoc-in [:material :material/reflective] 0.5)
                           (assoc-in [:material :material/transparency] 0.5)
                           (assoc-in [:material :material/refractive-index] 1.5))
           ball-under-floor (-> (shape/sphere)
                                (assoc-in [:material :material/color] color/red)
                                (assoc-in [:material :material/ambient] 0.5)
-                               (shape/apply-transform (xform/translation 0 -3.5 -0.5)))
+                               (xform/apply-transform (xform/translation 0 -3.5 -0.5)))
           w (-> default-world
                 (update :world/objects conj glass-floor)
                 (update :world/objects conj ball-under-floor))

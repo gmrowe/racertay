@@ -23,11 +23,11 @@
   
   (testing "A transformation can be assigned to a test pattern"
     (let [xform (xform/translation 1 2 3)
-          pattern (shape/apply-transform test-pattern xform)]
+          pattern (xform/apply-transform test-pattern xform)]
       (is (matrix/mat-eq? xform (:transform pattern)))))
 
   (testing "An object-transfomation can be applied to a test-pattern"
-    (let [shape (shape/apply-transform (shape/sphere) (xform/scaling 2 2 2))
+    (let [shape (xform/apply-transform (shape/sphere) (xform/scaling 2 2 2))
           pattern test-pattern]
       (is (color/color-eq?
            (color/color 1 1.5 2)
@@ -35,14 +35,14 @@
 
   (testing "A pattern transformation can be applied to a test-pattern"
     (let [shape (shape/sphere)
-          pattern (shape/apply-transform test-pattern (xform/scaling 2 2 2))]
+          pattern (xform/apply-transform test-pattern (xform/scaling 2 2 2))]
       (is (color/color-eq?
            (color/color 1 1.5 2)
            (pattern-at-shape pattern shape (tup/point 2 3 4))))))
 
   (testing "A test pattern can apply both object and pattern transfomation"
-    (let [shape (shape/apply-transform (shape/sphere) (xform/scaling 2 2 2))
-          pattern (shape/apply-transform test-pattern (xform/translation 0.5 1 1.5))]
+    (let [shape (xform/apply-transform (shape/sphere) (xform/scaling 2 2 2))
+          pattern (xform/apply-transform test-pattern (xform/translation 0.5 1 1.5))]
       (is (color/color-eq?
            (color/color 0.75 0.5 0.25)
            (pattern-at-shape pattern shape (tup/point 2.5 3 3.5)))))))
@@ -78,7 +78,7 @@
 (deftest pattern-at-shape-test
   (testing "Stripes with an object transformation"
     (let [object (-> (shape/sphere)
-                     (shape/apply-transform (xform/scaling 2 2 2)))
+                     (xform/apply-transform (xform/scaling 2 2 2)))
           pattern (stripe-pattern color/white color/black)
           c (pattern-at-shape pattern object (tup/point 1.5 0 0))]
       (is (color/color-eq? color/white c))))
@@ -86,15 +86,15 @@
   (testing "Stripes with a pattern transformation"
     (let [object (shape/sphere)
           pattern (-> (stripe-pattern color/white color/black)
-                      (shape/apply-transform (xform/scaling 2 2 2)))
+                      (xform/apply-transform (xform/scaling 2 2 2)))
           c (pattern-at-shape pattern object (tup/point 1.5 0 0))]
       (is (color/color-eq? color/white c))))
 
   (testing "Stripes with both object and pattern transformations"
     (let [object (-> (shape/sphere)
-                     (shape/apply-transform (xform/scaling 2 2 2)))
+                     (xform/apply-transform (xform/scaling 2 2 2)))
           pattern (-> (stripe-pattern color/white color/black)
-                      (shape/apply-transform (xform/translation 0.5 0 0)))
+                      (xform/apply-transform (xform/translation 0.5 0 0)))
           c (pattern-at-shape pattern object (tup/point 2.5 0 0))]
       (is (color/color-eq? color/white c)))))
 
@@ -140,10 +140,10 @@
 (deftest nested-checker-pattern-test
   (testing "A nested checker pattern should delegate to underlying patterns"
     (let [pattern-a (-> (stripe-pattern color/red color/green)
-                        (shape/apply-transform (xform/scaling 0.25 0.25 0.25)
+                        (xform/apply-transform (xform/scaling 0.25 0.25 0.25)
                                            (xform/rotation-y (/ Math/PI 4))))
           pattern-b (-> (checker-pattern color/purple color/orange)
-                        (shape/apply-transform (xform/scaling 0.33 0.33 0.33)))
+                        (xform/apply-transform (xform/scaling 0.33 0.33 0.33)))
           nest-check (nested-checker-pattern pattern-a pattern-b)]
       (let [point (tup/point 0 0 0)]
         (is (color/color-eq?

@@ -19,7 +19,7 @@
       (is (= hsize (:camera/hsize c)))
       (is (= vsize (:camera/vsize c)))
       (is (= field-of-view (:camera/field-of-view c)))
-      (is (mat/mat-eq? mat/identity-matrix (:camera/transform c))))))
+      (is (mat/mat-eq? mat/identity-matrix (:transform c))))))
 
 (deftest pixel-size-test
   (testing "The pixel size can for a horizontal canvas can be calculated"
@@ -46,7 +46,7 @@
   (testing "Constructing a ray when the camera is transformed"
     (let [transform (mat/mat-mul (xform/rotation-y (/ Math/PI 4))
                                  (xform/translation 0 -2 5)) 
-          c (apply-transform (camera 201 101 (/ Math/PI 2)) transform)
+          c (xform/apply-transform (camera 201 101 (/ Math/PI 2)) transform)
           r (ray-for-pixel c 100 50)
           rad-2-over-2 (/ (Math/sqrt 2) 2)]
       (is (tup/tup-eq? (tup/point 0 2 -5) (:ray/origin r)))
@@ -58,7 +58,7 @@
     (let [from (tup/point 0 0 -5)
           to (tup/point 0 0 0)
           up (tup/vect 0 1 0)
-          c (apply-transform
+          c (xform/apply-transform
              (camera 11 11 (/ Math/PI 2)) (xform/view-transform from to up))
           image (render c wt/default-world)]
       (is (col/color-eq? (col/color 0.38066 0.47583 0.2855)

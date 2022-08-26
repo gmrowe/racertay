@@ -70,3 +70,11 @@
     (mat/mat-mul
      (orientation-matrix forward left true-up)
      (translation (- (tup/x from)) (- (tup/y from)) (- (tup/z from))))))
+
+(defn apply-transform
+  ([obj xform]
+   (let [updated (update obj :transform (partial mat/mat-mul xform))]
+     (assoc updated :inverse-transform (mat/inverse (:transform updated)))))
+  
+  ([obj xform & more]
+   (reduce apply-transform obj (cons xform more))))

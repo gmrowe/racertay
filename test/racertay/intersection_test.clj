@@ -99,7 +99,7 @@
   (testing "The :over-point attribute should offset the hit"
     (let [r (ray/ray (tup/point 0 0 -5) (tup/vect 0 0 1))
           shape (-> (shape/sphere)
-                    (shape/apply-transform (xform/translation 0 0 1)))
+                    (xform/apply-transform (xform/translation 0 0 1)))
           i (intersection 5 shape)
           comps (comps/prepare-computations i r)]
       (is (< (tup/z (:intersection/over-point comps)) (/ fcmp/epsilon 2)))
@@ -128,12 +128,12 @@
 
   (testing "n1 and n2 should be precomputed"
     (testing "for a multi-sphere scenario" 
-      (let [a (shape/apply-transform glass-sphere (xform/scaling 2 2 2))
+      (let [a (xform/apply-transform glass-sphere (xform/scaling 2 2 2))
             b (-> glass-sphere
-                  (shape/apply-transform (xform/translation 0 0 -0.25))
+                  (xform/apply-transform (xform/translation 0 0 -0.25))
                   (assoc-in [:material :material/refractive-index] 2.0))
             c (-> glass-sphere
-                  (shape/apply-transform (xform/translation 0 0 0.25))
+                  (xform/apply-transform (xform/translation 0 0 0.25))
                   (assoc-in [:material :material/refractive-index] 2.5))
             ray (ray/ray (tup/point 0 0 -4) (tup/vect 0 0 1))
             xs (intersections
@@ -175,7 +175,7 @@
 
   (testing "under-point should be precomputed"
     (let [ray (ray/ray (tup/point 0 0 -5) (tup/vect 0 0 1))
-          shape (shape/apply-transform glass-sphere (xform/translation 0 0 1))
+          shape (xform/apply-transform glass-sphere (xform/translation 0 0 1))
           i (intersection 5 shape)
           comps (comps/prepare-computations i ray)]
       (is (< (/ fcmp/epsilon 2)  (tup/z (:intersection/under-point comps))))

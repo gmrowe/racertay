@@ -3,7 +3,8 @@
             [racertay.tuple :as tup]
             [racertay.ray :as ray]
             [racertay.canvas :as can]
-            [racertay.world :as wor]))
+            [racertay.world :as wor]
+            [racertay.transformations :as xform]))
 
 (defn- half-width-and-height [hsize vsize field-of-view]
   (let [half-view (Math/tan (/ field-of-view 2))
@@ -15,28 +16,20 @@
 (defn camera [hsize vsize field-of-view]
   (let [[half-width half-height]
         (half-width-and-height hsize vsize field-of-view)]
-    #:camera{:hsize hsize
-             :vsize vsize
-             :field-of-view field-of-view
-             :transform mat/identity-matrix
-             :inverse-transform mat/identity-matrix
-             :half-width half-width
-             :half-height half-height
-             :pixel-size (/ (* half-width 2) hsize)}))
+    (merge
+     #:camera{:hsize hsize
+              :vsize vsize
+              :field-of-view field-of-view
+              :half-width half-width
+              :half-height half-height
+              :pixel-size (/ (* half-width 2) hsize)}
 
-(defn apply-transform
-  ([camera xform]
-   (let [updated (update camera :camera/transform (partial mat/mat-mul xform))]
-     (assoc updated
-            :camera/inverse-transform
-            (mat/inverse (:camera/transform updated)))))
-
-  ([camera xform & more]
-   (reduce apply-transform camera (cons xform more))))
+     {:transform mat/identity-matrix
+      :inverse-transform mat/identity-matrix})))
 
 (defn ray-for-pixel [camera px py]
-  (let [{:camera/keys
-         [pixel-size half-width half-height transform inverse-transform]} camera
+  (let [{:camera/keys [pixel-size half-width half-height]} camera
+        {:keys [transform inverse-transform]} camera
         x-offset (* pixel-size (+ px 0.5))
         y-offset (* pixel-size (+ py 0.5))
         world-x (- half-width x-offset)
