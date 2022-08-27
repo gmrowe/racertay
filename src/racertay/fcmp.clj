@@ -3,7 +3,7 @@
 (def epsilon 0.00001)
 
 (defn nearly-eq? [x y]
-  (< (Math/abs (- x y)) epsilon))
+  (< (abs (- x y)) epsilon))
 
 (defn nearly-zero? [x]
   (nearly-eq? x 0.0))

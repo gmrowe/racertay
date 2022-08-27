@@ -1,5 +1,6 @@
 (ns racertay.material
-  (:require [racertay.color :as color]
+  (:require [clojure.math :as math]
+            [racertay.color :as color]
             [racertay.fcmp :as fcmp]
             [racertay.light :as light]
             [racertay.tuple :as tup]
@@ -44,7 +45,7 @@
       (if (pos? reflect-dot-eye)
         (color/color-mul-scalar
          (:light/intensity light)
-         (* specular (Math/pow reflect-dot-eye shininess)))
+         (* specular (math/pow reflect-dot-eye shininess)))
         color/black))))
 
 (defn lighting

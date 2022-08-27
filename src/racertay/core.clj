@@ -1,5 +1,6 @@
 (ns racertay.core
   (:require [clojure.java.io :as io]
+            [clojure.math :as math]
             [racertay.tuple :as tup]
             [racertay.color :as col]
             [racertay.shape :as shape]
@@ -22,15 +23,15 @@
 (def left-wall
   (-> (shape/plane)
       (xform/apply-transform
-       (xform/rotation-x (/ Math/PI 2))
-       (xform/rotation-y (- (/ Math/PI 4)))
+       (xform/rotation-x (/ math/PI 2))
+       (xform/rotation-y (- (/ math/PI 4)))
        (xform/translation 0 0 5))))
 
 (def right-wall
   (-> (shape/plane)
       (xform/apply-transform
-       (xform/rotation-x (/ Math/PI 2))
-       (xform/rotation-y (/ Math/PI 4))
+       (xform/rotation-x (/ math/PI 2))
+       (xform/rotation-y (/ math/PI 4))
        (xform/translation 0 0 5))
       (assoc-in [:material :material/pattern]
                 (patt/chevron-pattern col/orange col/green))))
@@ -48,7 +49,7 @@
 (def middle-sphere
   (let [pattern (-> (patt/stripe-pattern col/violet col/white)
                     (xform/apply-transform (xform/scaling 0.2 0.2 0.2)
-                                       (xform/rotation-z (/ Math/PI 3))))]
+                                       (xform/rotation-z (/ math/PI 3))))]
     (-> (shape/sphere)
         (xform/apply-transform (xform/translation -0.5 1 0.5))
         (assoc-in [:material :material/pattern] pattern)
@@ -82,7 +83,7 @@
 
 (def width 100)
 (def height 50)
-(def field-of-view (/ Math/PI 3))
+(def field-of-view (/ math/PI 3))
 (def camera-location (tup/point 0 1.5 -5))
 (def canvas-location (tup/point 0 1 0))
 (def up (tup/vect 0 1 0))

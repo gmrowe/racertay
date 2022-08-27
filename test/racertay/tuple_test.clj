@@ -1,7 +1,8 @@
 (ns racertay.tuple-test
   (:require [clojure.test :refer :all]
             [racertay.tuple :refer :all]
-            [racertay.fcmp :refer :all]))
+            [racertay.fcmp :refer :all]
+            [clojure.math :as math]))
 
 (deftest tuple-test
   (let [t (tuple 4.3 -4.2 3.1 0.0)]
@@ -118,8 +119,8 @@
     (is (nearly-eq? 1 (magnitude (vect 1 0 0))))
     (is (nearly-eq? 1 (magnitude (vect 0 1 0))))
     (is (nearly-eq? 1 (magnitude (vect 0 0 1))))
-    (is (nearly-eq? (Math/sqrt 14) (magnitude (vect 1 2 3))))
-    (is (nearly-eq? (Math/sqrt 14) (magnitude (vect -1 -2 -3))))))
+    (is (nearly-eq? (math/sqrt 14) (magnitude (vect 1 2 3))))
+    (is (nearly-eq? (math/sqrt 14) (magnitude (vect -1 -2 -3))))))
 
 (deftest vector-normalization-test 
   (testing "a vector can be normalized"
@@ -152,6 +153,6 @@
 
   (testing "Reflecting a vector off a slanted surface"
     (let [v (vect 0 -1 0)
-          rad-2-over-2 (/ (Math/sqrt 2) 2)
+          rad-2-over-2 (/ (math/sqrt 2) 2)
           n (vect rad-2-over-2 rad-2-over-2 0)]
       (is (tup-eq? (vect 1 0 0) (reflect v n))))))

@@ -1,5 +1,6 @@
 (ns racertay.shape
-  (:require [racertay.ray :as ray]
+  (:require [clojure.math :as math]
+            [racertay.ray :as ray]
             [racertay.tuple :as tup]
             [racertay.fcmp :as fcmp]
             [racertay.intersection :as inter]
@@ -53,8 +54,8 @@
       (if (neg? discriminant)
         inter/empty-intersections
         (inter/intersections
-         (inter/intersection (/ (- (- b) (Math/sqrt discriminant)) (* a 2)) sphere)
-         (inter/intersection (/ (+ (- b) (Math/sqrt discriminant)) (* a 2)) sphere))))))
+         (inter/intersection (/ (- (- b) (math/sqrt discriminant)) (* a 2)) sphere)
+         (inter/intersection (/ (+ (- b) (math/sqrt discriminant)) (* a 2)) sphere))))))
 
 (defn sphere []
   (map->ISphere (shape-data)))
@@ -68,7 +69,7 @@
   
   (local-intersect [plane local-ray]
     (let [{:ray/keys [origin direction]} local-ray]
-      (if (< fcmp/epsilon (Math/abs (tup/y direction)))
+      (if (< fcmp/epsilon (abs (tup/y direction)))
         (let [t (/ (- (tup/y origin)) (tup/y direction))]
           (inter/intersections (inter/intersection t plane)))
         inter/empty-intersections))))
@@ -83,18 +84,18 @@
     (let [x (tup/x local-point)
           y (tup/y local-point)
           z (tup/z local-point)
-          maxc (max (Math/abs x) (Math/abs y) (Math/abs z))]
+          maxc (max (abs x) (abs y) (abs z))]
       (condp = maxc
-        (Math/abs x) (tup/vect x 0 0)
-        (Math/abs y) (tup/vect 0 y 0)
-        (Math/abs z) (tup/vect 0 0 z))))
+        (abs x) (tup/vect x 0 0)
+        (abs y) (tup/vect 0 y 0)
+        (abs z) (tup/vect 0 0 z))))
   
   (local-intersect [cube local-ray]
     (letfn [(check-axis [origin direction]
               (let [tmin-num (- -1 origin)
                     tmax-num (- 1 origin)]
                 (sort
-                 (if (< fcmp/epsilon (Math/abs direction))
+                 (if (< fcmp/epsilon (abs direction))
                    [(/ tmin-num direction) (/ tmax-num direction)]
                    [(* tmin-num ##Inf) (* tmax-num ##Inf)]))))]
       
@@ -134,8 +135,8 @@
               discriminant (- (* b b) (* 4.0 a c))]
           (if (neg? discriminant)
             inter/empty-intersections
-            (let [t0 (/ (- (- b) (Math/sqrt discriminant)) (* 2.0 a))
-                  t1 (/ (+ (- b) (Math/sqrt discriminant)) (* 2.0 a))]
+            (let [t0 (/ (- (- b) (math/sqrt discriminant)) (* 2.0 a))
+                  t1 (/ (+ (- b) (math/sqrt discriminant)) (* 2.0 a))]
               (inter/intersections
                (inter/intersection t0 cylinder)
                (inter/intersection t1 cylinder)))))))))

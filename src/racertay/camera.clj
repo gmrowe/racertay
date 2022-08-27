@@ -1,5 +1,6 @@
 (ns racertay.camera
-  (:require [racertay.matrix :as mat]
+  (:require [clojure.math :as math]
+            [racertay.matrix :as mat]
             [racertay.tuple :as tup]
             [racertay.ray :as ray]
             [racertay.canvas :as can]
@@ -7,7 +8,7 @@
             [racertay.transformations :as xform]))
 
 (defn- half-width-and-height [hsize vsize field-of-view]
-  (let [half-view (Math/tan (/ field-of-view 2))
+  (let [half-view (math/tan (/ field-of-view 2))
         aspect-ratio (double (/ hsize vsize))]
      (if (>= aspect-ratio 1)
        [half-view (/ half-view aspect-ratio)]

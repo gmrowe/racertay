@@ -1,6 +1,7 @@
 (ns racertay.world-test
   (:require [clojure.test :refer :all]
             [racertay.world :refer :all]
+            [clojure.math :as math]
             [racertay.light :as light]
             [racertay.tuple :as tup]
             [racertay.color :as color]
@@ -137,7 +138,7 @@
                   (assoc-in [:material :material/reflective] 0.5)
                   (xform/apply-transform (xform/translation 0 -1 0)))
         w (update default-world :object conj shape)
-        rad-2 (Math/sqrt 2)
+        rad-2 (math/sqrt 2)
         ray (ray/ray (tup/point 0 0 -3) (tup/vect 0 (/ rad-2 -2) (/ rad-2 2)))
         i (intersection/intersection rad-2 shape)
         comps (comps/prepare-computations i ray)]
@@ -194,7 +195,7 @@
                 (assoc-in [:world/objects 0 :material :material/transparency] 1.0)
                 (assoc-in [:world/objects 0 :material :material/refractive-index] 1.5))
           shape (nth (:world/objects w) 0)
-          rad-2 (Math/sqrt 2)
+          rad-2 (math/sqrt 2)
           r (ray/ray (tup/point 0 0 (/ rad-2 2)) (tup/vect 0 1 0))
           xs (intersection/intersections
               (intersection/intersection (/ rad-2 -2) shape)
@@ -231,7 +232,7 @@
           w (-> default-world
                 (update :world/objects conj glass-floor)
                 (update :world/objects conj under-floor-ball))
-          rad-2 (Math/sqrt 2)
+          rad-2 (math/sqrt 2)
           r (ray/ray (tup/point 0 0 -3) (tup/vect 0 (/ rad-2 -2) (/ rad-2 2)))
           xs (intersection/intersections
               (intersection/intersection rad-2 glass-floor))
@@ -251,7 +252,7 @@
           w (-> default-world
                 (update :world/objects conj glass-floor)
                 (update :world/objects conj ball-under-floor))
-          rad-2 (Math/sqrt 2)
+          rad-2 (math/sqrt 2)
           r (ray/ray (tup/point 0 0 -3) (tup/vect 0 (/ rad-2 -2) (/ rad-2 2)))
           xs (intersection/intersections
               (intersection/intersection rad-2 glass-floor))

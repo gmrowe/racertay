@@ -1,6 +1,7 @@
 (ns racertay.transformations
   (:require [racertay.matrix :as mat]
-            [racertay.tuple :as tup]))
+            [racertay.tuple :as tup]
+            [clojure.math :as math]))
 
 (defn translation [x y z]
   (mat/mat4x4
@@ -23,8 +24,8 @@
 (def z-reflection (scaling 1 1 -1))
 
 (defn rotation-x [rad]
-  (let [c (Math/cos rad)
-        s (Math/sin rad)]
+  (let [c (math/cos rad)
+        s (math/sin rad)]
     (mat/mat4x4
      1 0    0  0
      0 c (- s) 0
@@ -32,8 +33,8 @@
      0 0    0  1)))
 
 (defn rotation-y [rad]
-  (let [c (Math/cos rad)
-        s (Math/sin rad)]
+  (let [c (math/cos rad)
+        s (math/sin rad)]
     (mat/mat4x4
      c     0 s 0
      0     1 0 0
@@ -41,8 +42,8 @@
      0     0 0 1)))
 
 (defn rotation-z [rad]
-  (let [c (Math/cos rad)
-        s (Math/sin rad)]
+  (let [c (math/cos rad)
+        s (math/sin rad)]
     (mat/mat4x4
      c (- s) 0 0
      s    c  0 0

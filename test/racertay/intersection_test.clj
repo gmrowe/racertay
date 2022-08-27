@@ -1,6 +1,7 @@
 (ns racertay.intersection-test
   (:require [clojure.test :refer :all]
             [racertay.intersection :refer :all]
+            [clojure.math :as math]
             [racertay.shape :as shape]
             [racertay.fcmp :as fcmp]
             [racertay.ray :as ray]
@@ -118,7 +119,7 @@
              (tup/z (:intersection/point comps))))))
 
   (testing "The reflection vector should be precomputed"
-    (let [rad-2 (Math/sqrt 2)
+    (let [rad-2 (math/sqrt 2)
           shape (shape/plane)
           r (ray/ray (tup/point 0 1 -1) (tup/vect 0 (/ rad-2 -2) (/ rad-2 2)))
           i (intersection rad-2 shape)
@@ -184,7 +185,7 @@
 (deftest schlick-approximation-test
   (testing "The shlick approximation under total internal reflection is 1.0"
     (let [shape glass-sphere
-          rad-2 (Math/sqrt 2)
+          rad-2 (math/sqrt 2)
           r (ray/ray (tup/point 0 0 (/ rad-2 2)) (tup/vect 0 1 0))
           xs (intersections
               (intersection (/ rad-2 -2) shape)

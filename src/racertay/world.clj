@@ -1,5 +1,6 @@
 (ns racertay.world
-  (:require [racertay.protocols :as p]
+  (:require [clojure.math :as math]
+            [racertay.protocols :as p]
             [racertay.color :as color]
             [racertay.material :as material]
             [racertay.computations :as comps]
@@ -50,7 +51,7 @@
 
 (defn- calc-refracted-color [world comps sin2-t n-ratio cos-i remaining]
   (let [{:intersection/keys [object eyev normalv under-point]} comps
-        cos-t (Math/sqrt (- 1.0 sin2-t))
+        cos-t (math/sqrt (- 1.0 sin2-t))
         direction (tup/tup-sub
                    (tup/tup-mul-scalar normalv (- (* n-ratio cos-i) cos-t))
                    (tup/tup-mul-scalar eyev n-ratio))

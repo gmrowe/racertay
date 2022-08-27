@@ -1,6 +1,7 @@
 (ns racertay.transformations-test
   (:require [clojure.test :refer :all]
             [racertay.transformations :refer :all]
+            [clojure.math :as math]
             [racertay.tuple :as tup]
             [racertay.matrix :as mat]))
 
@@ -43,9 +44,9 @@
       (is (tup/tup-eq? (tup/point -2 3 4) (mat/mat-mul-tup x-reflection p))))))
 
 
-(def rad2-over-2 (/ (Math/sqrt 2) 2))
-(def quarter-pi (/ Math/PI 4))
-(def half-pi (/ Math/PI 2))
+(def rad2-over-2 (/ (math/sqrt 2) 2))
+(def quarter-pi (/ math/PI 4))
+(def half-pi (/ math/PI 2))
 
 (deftest rotation-test
   (testing "A point can be rotated about the x-axis"
@@ -110,7 +111,7 @@
 
 (deftest compoound-transfomations-test
   (let [p (tup/point 1 0 1)
-        rot (rotation-x (/ Math/PI 2))
+        rot (rotation-x (/ math/PI 2))
         scale (scaling 5 5 5)
         trans (translation 10 5 7)]
     (testing "Transfomations can be applied individually"

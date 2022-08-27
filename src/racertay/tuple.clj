@@ -1,5 +1,6 @@
 (ns racertay.tuple
-  (:require [racertay.fcmp :refer :all]))
+  (:require [clojure.math :as math]
+            [racertay.fcmp :refer :all]))
 
 (defn tuple [x y z w]
   [(double x) (double y) (double z) (double  w)])
@@ -72,7 +73,7 @@
 
 (defn magnitude [v]
   (letfn [(square [x] (* x x))]
-    (Math/sqrt (apply + (map square v)))))
+    (math/sqrt (apply + (map square v)))))
 
 (defn normalize [v]
   (let [m (magnitude v)]

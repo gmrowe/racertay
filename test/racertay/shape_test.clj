@@ -1,6 +1,7 @@
 (ns racertay.shape-test
   (:require [clojure.test :refer :all]
             [racertay.shape :refer :all]
+            [clojure.math :as math]
             [racertay.transformations :as xform]
             [racertay.ray :as ray]
             [racertay.tuple :as tup]
@@ -95,7 +96,7 @@
 
   (testing "A sphere can incorporate multiple transfomations"
     (let [trans (xform/translation 2 3 4)
-          rot (xform/rotation-z (/ Math/PI 4))
+          rot (xform/rotation-z (/ math/PI 4))
           scale (xform/scaling 2 2 2)
           compound-op (matrix/mat-mul rot trans scale)
           s (shape/apply-transform (sphere) scale trans rot)]
@@ -103,7 +104,7 @@
 
   (testing "A sphere's inverse-transform is updated after transfomations"
     (let [trans (xform/translation 2 3 4)
-          rot (xform/rotation-z (/ Math/PI 4))
+          rot (xform/rotation-z (/ math/PI 4))
           scale (xform/scaling 2 2 2)
           compound-op (matrix/mat-mul rot trans scale)
           s (shape/apply-transform (sphere) scale trans rot)]
@@ -128,13 +129,13 @@
 
   (testing "A normal of a sphere at a nonaxial point"
     (let [s (sphere)
-          rad-3-over-3 (/ (Math/sqrt 3) 3)
+          rad-3-over-3 (/ (math/sqrt 3) 3)
           n (shape/normal-at s (tup/point rad-3-over-3 rad-3-over-3 rad-3-over-3))]
       (is (tup/tup-eq? (tup/vect rad-3-over-3 rad-3-over-3 rad-3-over-3) n))))
 
   (testing "A normal is normalized by default"
     (let [s (sphere)
-          rad-3-over-3 (/ (Math/sqrt 3) 3)
+          rad-3-over-3 (/ (math/sqrt 3) 3)
           n (shape/normal-at s (tup/point rad-3-over-3 rad-3-over-3 rad-3-over-3))]
       (is (tup/tup-eq? (tup/normalize n) n))))
 
@@ -145,9 +146,9 @@
 
   (testing "The normal of a transfomed sphere"
     (let [xform (matrix/mat-mul
-                 (xform/scaling 1 0.5 1) (xform/rotation-z (/ Math/PI 5)))
+                 (xform/scaling 1 0.5 1) (xform/rotation-z (/ math/PI 5)))
           s (shape/apply-transform (sphere) xform)
-          rad-2-over-2 (/ (Math/sqrt 2) 2)
+          rad-2-over-2 (/ (math/sqrt 2) 2)
           n (shape/normal-at s (tup/point 0 rad-2-over-2 (- rad-2-over-2)))]
       (is (tup/tup-eq? (tup/vect 0 0.97014 -0.24254) n)))))
 

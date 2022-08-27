@@ -1,6 +1,7 @@
 (ns racertay.material-test
   (:require [clojure.test :refer :all]
             [racertay.material :refer :all]
+            [clojure.math :as math]
             [racertay.color :as color]
             [racertay.fcmp :as fcmp]
             [racertay.tuple :as tup]
@@ -82,7 +83,7 @@
              (lighting m object light surface-pos eyev normalv in-shadow)))))
 
     (testing "Lighting with eye betweem the light and surface - eye offset 45 deg"
-      (let [rad-2-over-2 (/ (Math/sqrt 2) 2)
+      (let [rad-2-over-2 (/ (math/sqrt 2) 2)
             eyev (tup/vect 0 rad-2-over-2 (- rad-2-over-2))
             normalv (tup/vect 0 0 -1)
             light (light/point-light (tup/point 0 0 -10) color/white)
@@ -101,7 +102,7 @@
              (lighting m object light surface-pos eyev normalv in-shadow)))))
 
     (testing "Lighting with eye in path of reflection vector"
-      (let [rad-2-over-2 (/ (Math/sqrt 2) 2)
+      (let [rad-2-over-2 (/ (math/sqrt 2) 2)
             eyev (tup/vect 0 (- rad-2-over-2) (- rad-2-over-2))
             normalv (tup/vect 0 0 -1)
             light (light/point-light (tup/point 0 10 -10) color/white)
