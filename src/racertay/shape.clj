@@ -116,7 +116,7 @@
 
 
 (defrecord ICylinder
-    [id transform inverse-transform material]
+    [minimum maximum]
   p/Shape
   (local-normal-at [cylinder local-point]
     (tup/vect (tup/x local-point) 0.0 (tup/z local-point)))
@@ -136,10 +136,17 @@
           (if (neg? discriminant)
             inter/empty-intersections
             (let [t0 (/ (- (- b) (math/sqrt discriminant)) (* 2.0 a))
-                  t1 (/ (+ (- b) (math/sqrt discriminant)) (* 2.0 a))]
-              (inter/intersections
-               (inter/intersection t0 cylinder)
-               (inter/intersection t1 cylinder)))))))))
+                  t1 (/ (+ (- b) (math/sqrt discriminant)) (* 2.0 a))
+                  in-y-bounds? (fn [t]
+                                 (let [y (+ (* t (tup/y direction)) (tup/y origin))]
+                                   (< (:minimum cylinder) y (:maximum cylinder))))]
+              (reduce #(conj %1 (inter/intersection %2 cylinder))
+                      inter/empty-intersections
+                      (filter in-y-bounds? [t0 t1])))))))))
 
 (defn cylinder []
-  (map->ICylinder (shape-data)))
+  (map->ICylinder
+   (merge
+    (shape-data)
+    {:minimum ##-Inf
+     :maximum ##Inf})))

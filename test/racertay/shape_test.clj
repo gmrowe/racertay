@@ -317,3 +317,30 @@
         (normal-on-cylinder-surface-test (tup/point 0 -2 1) (tup/vect 0 0 1)))
       (testing "at a -x point"
         (normal-on-cylinder-surface-test (tup/point -1 1 0) (tup/vect -1 0 0))))))
+
+(deftest bounded-cylinder-test
+  (testing "The default minimum of a cylinder is negative infinity"
+    (is (= ##-Inf (:minimum (shape/cylinder)))))
+  (testing "The default maximum of a cylinder is positive infinity"
+    (is (= ##Inf (:maximum (shape/cylinder)))))
+  (testing "A cylinder with bounds at 1 and 2"
+    (letfn [(cylinder-bounded-at-1-2-test
+              [point direction expected-count]
+              (let [shape (-> (shape/cylinder)
+                              (assoc :minimum 1)
+                              (assoc :maximum 2))
+                    r (ray/ray point (tup/normalize direction))
+                    xs (p/local-intersect shape r)]
+                (is (= expected-count (count xs)))))]
+      (testing "does not intersect a ray cast at an angle from inside"
+        (cylinder-bounded-at-1-2-test (tup/point 0 1.5 0) (tup/vect 0.1 1 0) 0))
+      (testing "does not intersect a ray cast above cylinder perpendicularly"
+        (cylinder-bounded-at-1-2-test (tup/point 0 3 -5) (tup/vect 0 0 1) 0))
+      (testing "does not intersect a ray cast below cylinder perpendicularly"
+        (cylinder-bounded-at-1-2-test (tup/point 0 0 -5) (tup/vect 0 0 1) 0))
+      (testing "does not intersect a ray cast at the upper bounds"
+        (cylinder-bounded-at-1-2-test (tup/point 0 2 -5) (tup/vect 0 0 1) 0))
+      (testing "does not intersect a ray cast at the lower bounds"
+        (cylinder-bounded-at-1-2-test (tup/point 0 1 -5) (tup/vect 0 0 1) 0))
+      (testing "has 2 itnsectons with a ray cast perpendicularly at center"
+        (cylinder-bounded-at-1-2-test (tup/point 0 1.5 -2) (tup/vect 0 0 1) 2)))))
