@@ -344,3 +344,50 @@
         (cylinder-bounded-at-1-2-test (tup/point 0 1 -5) (tup/vect 0 0 1) 0))
       (testing "has 2 itnsectons with a ray cast perpendicularly at center"
         (cylinder-bounded-at-1-2-test (tup/point 0 1.5 -2) (tup/vect 0 0 1) 2)))))
+
+(deftest closed-cylinder-test
+  (testing "A default cylinder is  not closed"
+    (is (false? (:closed? (shape/cylinder)))))
+  
+  (testing "A capped cylinder with bounds at 1 and 2"
+    (letfn [(capped-cylinder-intersection-test
+              [point direction expected-count]
+              (let [shape (-> (shape/cylinder)
+                              (assoc :minimum 1)
+                              (assoc :maximum 2)
+                              (assoc :closed? :true))
+                    r (ray/ray point (tup/normalize direction))
+                    xs (p/local-intersect shape r)]
+                (is (= expected-count (count xs)))))]
+      (testing "Has two interections when ray goes through both caps"
+        (capped-cylinder-intersection-test (tup/point 0 3 0) (tup/vect 0 -1 0) 2))
+      (testing "Has two interections when ray goes through both caps at an angle"
+        (capped-cylinder-intersection-test (tup/point 0 3 -2) (tup/vect 0 -1 2) 2))
+      (testing "Has two interections when ray exits through bottom corner"
+        (capped-cylinder-intersection-test (tup/point 0 4 -2) (tup/vect 0 -1 1) 2))
+      (testing "Has two interections when ray goes through both caps at an angle"
+        (capped-cylinder-intersection-test (tup/point 0 0 -2) (tup/vect 0 1 2) 2))
+      (testing "Has two interections when ray goes through top corner"
+        (capped-cylinder-intersection-test (tup/point 0 -1 -2) (tup/vect 0 1 1) 2))))
+
+  (testing "The normal vector"
+    (letfn [(capped-cylinder-normal-test
+              [point expected-normal]
+              (let [shape (-> (shape/cylinder)
+                              (assoc :minimum 1)
+                              (assoc :maximum 2)
+                              (assoc :closed? :true))]
+                (is (tup/tup-eq?
+                     expected-normal (p/local-normal-at shape point)))))]
+      (testing "at the center of the bottom end cap"
+        (capped-cylinder-normal-test (tup/point 0 1 0) (tup/vect 0 -1 0)))
+      (testing "offset +x from center of bottom end cap"
+        (capped-cylinder-normal-test (tup/point 0.5 1 0) (tup/vect 0 -1 0)))
+      (testing "offset +z from center of bottom end cap"
+        (capped-cylinder-normal-test (tup/point 0 1 0.5) (tup/vect 0 -1 0)))
+      (testing "at the center of the top end cap"
+        (capped-cylinder-normal-test (tup/point 0 2 0) (tup/vect 0 1 0)))
+      (testing "offset +x from center of top end cap"
+        (capped-cylinder-normal-test (tup/point 0.5 2 0) (tup/vect 0 1 0)))
+      (testing "offset +z from center of top end cap"
+        (capped-cylinder-normal-test (tup/point 0 2 0.5) (tup/vect 0 1 0))))))

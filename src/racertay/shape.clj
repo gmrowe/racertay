@@ -114,15 +114,28 @@
 (defn cube []
   (map->ICube (shape-data)))
 
+(defn- check-cap? [ray t]
+  (let [{:ray/keys [direction origin]} ray
+        x (+ (tup/x origin) (* t (tup/x direction)))
+        z (+ (tup/z origin) (* t (tup/z direction)))]
+    (<= (+ (* x x) (* z z)) 1.0)))
 
-(defrecord ICylinder
-    [minimum maximum]
-  p/Shape
-  (local-normal-at [cylinder local-point]
-    (tup/vect (tup/x local-point) 0.0 (tup/z local-point)))
+(defn- intersect-cylinder-caps
+  [cylinder ray]
+  (let [{:keys [minimum maximum closed?]} cylinder
+        direction-y (tup/y (:ray/direction ray))
+        origin-y (tup/y (:ray/origin ray ))]
+    (if (or (not closed?) (fcmp/nearly-zero? direction-y))
+      inter/empty-intersections
+      (let [t-lower (/ (- minimum origin-y) direction-y)
+            t-upper (/ (- maximum origin-y) direction-y)]
+        (reduce #(conj %1 (inter/intersection %2 cylinder))
+                inter/empty-intersections
+                (filter #(check-cap? ray %) [t-lower t-upper]))))))
 
-  (local-intersect [cylinder local-ray]
-    (let [{:ray/keys [origin direction]} local-ray
+(defn- intersect-cylinder-sides
+  [cylinder ray]
+  (let [{:ray/keys [origin direction]} ray
           direction-x (tup/x direction)
           direction-z (tup/z direction)
           a (+ (* direction-x direction-x) (* direction-z direction-z))]
@@ -142,11 +155,31 @@
                                    (< (:minimum cylinder) y (:maximum cylinder))))]
               (reduce #(conj %1 (inter/intersection %2 cylinder))
                       inter/empty-intersections
-                      (filter in-y-bounds? [t0 t1])))))))))
+                      (filter in-y-bounds? [t0 t1]))))))))
+
+(defrecord ICylinder
+    [minimum maximum]
+  p/Shape
+  (local-normal-at [cylinder local-point]
+    (let [x (tup/x local-point)
+          y (tup/y local-point)
+          z (tup/z local-point)
+          distance (+ (* x x) (* z z))]
+      (cond
+        (and (< distance 1.0) (<= (- (:maximum cylinder) fcmp/epsilon) y)) (tup/vect 0 1 0)
+        (and (< distance 1.0) (<= y (+ (:minimum cylinder) fcmp/epsilon))) (tup/vect 0 -1 0)
+        :else (tup/vect x 0 z))))
+
+  (local-intersect [cylinder local-ray]
+    (sort-by
+     :intersection/t
+     (concat (intersect-cylinder-sides cylinder local-ray)
+             (intersect-cylinder-caps cylinder local-ray)))))
 
 (defn cylinder []
   (map->ICylinder
    (merge
     (shape-data)
     {:minimum ##-Inf
-     :maximum ##Inf})))
+     :maximum ##Inf
+     :closed? false})))
