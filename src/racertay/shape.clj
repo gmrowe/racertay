@@ -17,14 +17,6 @@
    :inverse-transform matrix/identity-matrix
    :material material/default-material})
 
-(defn apply-transform
-  ([obj xform]
-   (let [updated (update obj :transform (partial matrix/mat-mul xform))]
-     (assoc updated :inverse-transform (matrix/inverse (:transform updated)))))
-  
-  ([obj xform & more]
-   (reduce apply-transform obj (cons xform more))))
-
 (defn intersect [shape ray]
   (let [local-ray (ray/transform ray (:inverse-transform shape))]
     (p/local-intersect shape local-ray)))
