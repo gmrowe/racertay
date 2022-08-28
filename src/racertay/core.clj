@@ -72,8 +72,10 @@
 (def cylinder
   (-> (shape/cylinder)
       (xform/apply-transform
-       (xform/scaling 0.5 0.5 1.0)
-       (xform/translation -0.15 -0.8 -1.2))
+       (xform/scaling 0.5 1.0 0.5)
+       (xform/translation 0.44 -0.8 -1.5))
+      (assoc :maximum 1.6)
+      (assoc :minimum -0.5)
       (assoc-in [:material :material/color] col/brown)))
 
 
@@ -81,8 +83,8 @@
   (light/point-light
    (tup/point -10 10 -10) col/white))
 
-(def width 100)
-(def height 50)
+(def width 300)
+(def height 200)
 (def field-of-view (/ math/PI 3))
 (def camera-location (tup/point 0 1.5 -5))
 (def canvas-location (tup/point 0 1 0))
