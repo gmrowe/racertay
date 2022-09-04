@@ -251,6 +251,8 @@
   ([] (cone ##-Inf ##Inf :open))
   ([minimum maximum closed?]
    (map->ICone
-    {:minimum minimum
-     :maximum maximum
-     :closed? (= closed? :closed)})))
+    (merge
+     (shape-data)
+     {:minimum minimum
+      :maximum maximum
+      :closed? (= closed? :closed)}))))
