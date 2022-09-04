@@ -348,45 +348,97 @@
   (testing "A default cylinder is  not closed"
     (is (false? (:closed? (cylinder)))))
   
-  (testing "A capped cylinder with bounds at 1 and 2"
-    (letfn [(capped-cylinder-intersection-test
+   (testing "A closed cylinder with bounds at 1 and 2"
+    (letfn [(closed-cylinder-intersection-test
               [point direction expected-count]
               (let [shape (-> (cylinder)
                               (assoc :minimum 1)
                               (assoc :maximum 2)
-                              (assoc :closed? :true))
+                              (assoc :closed? true))
                     r (ray/ray point (tup/normalize direction))
                     xs (p/local-intersect shape r)]
                 (is (= expected-count (count xs)))))]
       (testing "Has two interections when ray goes through both caps"
-        (capped-cylinder-intersection-test (tup/point 0 3 0) (tup/vect 0 -1 0) 2))
+        (closed-cylinder-intersection-test (tup/point 0 3 0) (tup/vect 0 -1 0) 2))
       (testing "Has two interections when ray goes through both caps at an angle"
-        (capped-cylinder-intersection-test (tup/point 0 3 -2) (tup/vect 0 -1 2) 2))
+        (closed-cylinder-intersection-test (tup/point 0 3 -2) (tup/vect 0 -1 2) 2))
       (testing "Has two interections when ray exits through bottom corner"
-        (capped-cylinder-intersection-test (tup/point 0 4 -2) (tup/vect 0 -1 1) 2))
+        (closed-cylinder-intersection-test (tup/point 0 4 -2) (tup/vect 0 -1 1) 2))
       (testing "Has two interections when ray goes through both caps at an angle"
-        (capped-cylinder-intersection-test (tup/point 0 0 -2) (tup/vect 0 1 2) 2))
+        (closed-cylinder-intersection-test (tup/point 0 0 -2) (tup/vect 0 1 2) 2))
       (testing "Has two interections when ray goes through top corner"
-        (capped-cylinder-intersection-test (tup/point 0 -1 -2) (tup/vect 0 1 1) 2))))
+        (closed-cylinder-intersection-test (tup/point 0 -1 -2) (tup/vect 0 1 1) 2))))
 
   (testing "The normal vector"
-    (letfn [(capped-cylinder-normal-test
+    (letfn [(closed-cylinder-normal-test
               [point expected-normal]
               (let [shape (-> (cylinder)
                               (assoc :minimum 1)
                               (assoc :maximum 2)
-                              (assoc :closed? :true))]
+                              (assoc :closed? true))]
                 (is (tup/tup-eq?
                      expected-normal (p/local-normal-at shape point)))))]
       (testing "at the center of the bottom end cap"
-        (capped-cylinder-normal-test (tup/point 0 1 0) (tup/vect 0 -1 0)))
+        (closed-cylinder-normal-test (tup/point 0 1 0) (tup/vect 0 -1 0)))
       (testing "offset +x from center of bottom end cap"
-        (capped-cylinder-normal-test (tup/point 0.5 1 0) (tup/vect 0 -1 0)))
+        (closed-cylinder-normal-test (tup/point 0.5 1 0) (tup/vect 0 -1 0)))
       (testing "offset +z from center of bottom end cap"
-        (capped-cylinder-normal-test (tup/point 0 1 0.5) (tup/vect 0 -1 0)))
+        (closed-cylinder-normal-test (tup/point 0 1 0.5) (tup/vect 0 -1 0)))
       (testing "at the center of the top end cap"
-        (capped-cylinder-normal-test (tup/point 0 2 0) (tup/vect 0 1 0)))
+        (closed-cylinder-normal-test (tup/point 0 2 0) (tup/vect 0 1 0)))
       (testing "offset +x from center of top end cap"
-        (capped-cylinder-normal-test (tup/point 0.5 2 0) (tup/vect 0 1 0)))
+        (closed-cylinder-normal-test (tup/point 0.5 2 0) (tup/vect 0 1 0)))
       (testing "offset +z from center of top end cap"
-        (capped-cylinder-normal-test (tup/point 0 2 0.5) (tup/vect 0 1 0))))))
+        (closed-cylinder-normal-test (tup/point 0 2 0.5) (tup/vect 0 1 0))))))
+
+(deftest cone-local-intersect-test
+  (testing "Intersecting an infinite cone with a ray"
+    (letfn [(cone-ray-intersect-test
+              [origin direction expected-t0 expected-t1]
+              (let [shape (cone)
+                    d (tup/normalize direction)
+                    r (ray/ray origin d)
+                    xs (p/local-intersect shape r)]
+                (is (= 2 (count xs)) "The correct number of intersects")
+                (is (fcmp/nearly-eq? expected-t0 (:intersection/t (nth xs 0))) "t0")
+                (is (fcmp/nearly-eq? expected-t1 (:intersection/t (nth xs 1))) "t1")))]
+      (testing "aimed at the center of the double-napped cone"
+        (cone-ray-intersect-test (tup/point 0 0 -5) (tup/vect 0 0 1) 5 5))
+      (testing "aimed at the top cone of the double-napped cone"
+        (cone-ray-intersect-test (tup/point 0 0 -5) (tup/vect 1 1 1) 8.66025 8.66025))
+      (testing "aimed at the bottom cone of the double-napped cone"
+        (cone-ray-intersect-test (tup/point 1 1 -5) (tup/vect -0.5 -1 1) 4.55006 49.44994))))
+
+  (testing "Intersecting a cone with a ray parallel to one if its halves"
+    (let [shape (cone)
+          direction (tup/normalize (tup/vect 0 1 1))
+          ray (ray/ray (tup/point 0 0 -1) direction)
+          xs (p/local-intersect shape ray)]
+      (is (= 1 (count xs)) "Single intersect")
+      (is (fcmp/nearly-eq? 0.35355 (:intersection/t (nth xs 0))))))
+
+  (testing "Intersecting a cones caps with a ray"
+    (letfn [(capped-cone-ray-intercept-test
+              [origin direction expected-count]
+              (let [shape (cone -0.5 0.5 :closed)
+                    r (ray/ray origin (tup/normalize direction))
+                    xs (p/local-intersect shape r)]
+                (is (= expected-count (count xs)))))]
+      (testing "pointed up, missing the cone entrely"
+        (capped-cone-ray-intercept-test (tup/point 0 0 -5) (tup/vect 0 1 0) 0))
+      (testing "pointed up at angle, enterimg the side, exiting the cap"
+        (capped-cone-ray-intercept-test (tup/point 0 0 -0.25) (tup/vect 0 1 1) 2))
+      (testing "pointed up, enterimg the bottom cap, exiting the top cap"
+        (capped-cone-ray-intercept-test (tup/point 0 0 -0.25) (tup/vect 0 1 0) 4)))))
+
+(deftest cone-local-normal-test
+  (testing "Normal vector on a cone"
+    (letfn [(cone-normal-test
+              [point expected-normal]
+              (is (tup/tup-eq? expected-normal (p/local-normal-at (cone) point))))]
+      (testing "at the origin"
+        (cone-normal-test (tup/point 0 0 0) (tup/vect 0 0 0)))
+      (testing "at a point on the upper cone"
+        (cone-normal-test (tup/point 1 1 1) (tup/vect 1 (- (math/sqrt 2)) 1)))
+      (testing "Test 01"
+        (cone-normal-test (tup/point -1 -1 0) (tup/vect -1 1 0))))))
