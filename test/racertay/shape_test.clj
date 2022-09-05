@@ -401,7 +401,8 @@
                     xs (p/local-intersect shape r)]
                 (is (= 2 (count xs)) "The correct number of intersects")
                 (is (fcmp/nearly-eq? expected-t0 (:intersection/t (nth xs 0))) "t0")
-                (is (fcmp/nearly-eq? expected-t1 (:intersection/t (nth xs 1))) "t1")))]
+                (is (fcmp/nearly-eq? expected-t1 (:intersection/t (nth xs 1))) "t1")
+                (is (every? #(= shape (:intersection/object %)) xs)) "intersection obj is shape"))]
       (testing "aimed at the center of the double-napped cone"
         (cone-ray-intersect-test (tup/point 0 0 -5) (tup/vect 0 0 1) 5 5))
       (testing "aimed at the top cone of the double-napped cone"

@@ -198,7 +198,7 @@
                   in-y-bounds? (fn [t]
                                  (let [y (+ (* t (tup/y direction)) (tup/y origin))]
                                    (< (:minimum cone) y (:maximum cone))))]
-              (reduce #(conj %1 (inter/intersection %2 cylinder))
+              (reduce #(conj %1 (inter/intersection %2 cone))
                       inter/empty-intersections
                       (filter in-y-bounds? [t0 t1]))))))))
 
@@ -222,12 +222,12 @@
                   (conj xs0 (inter/intersection t-lower cone))
                   xs0)
             xs2 (if (check-cone-cap? ray t-upper maximum)
-                  (conj xs1 (inter/intersections t-upper cone))
+                  (conj xs1 (inter/intersection t-upper cone))
                   xs1)]
         xs2))))
 
 (defrecord ICone
-  [minumum maximum]
+  [minimum maximum closed?]
   p/Shape
   (local-normal-at [cone local-point]
     (let [x (tup/x local-point)
@@ -241,7 +241,8 @@
         :else (tup/vect x vy z))))
 
 
-  (local-intersect [cone local-ray]
+  (local-intersect
+    [cone local-ray]
     (sort-by
      :intersection/t
      (concat (intersect-cone-sides cone local-ray)
@@ -256,3 +257,6 @@
      {:minimum minimum
       :maximum maximum
       :closed? (= closed? :closed)}))))
+
+(let [shape (cone -1 1 :closed)]
+  (intersect-cone-caps shape (ray/ray (tup/point 0 -2 0) (tup/vect 0 1 0))))
