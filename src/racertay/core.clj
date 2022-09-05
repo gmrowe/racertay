@@ -76,8 +76,15 @@
        (xform/translation 0.44 -0.8 -1.5))
       (assoc :maximum 1.6)
       (assoc :minimum -0.5)
-      (assoc-in [:material :material/color] col/brown)))
+      (assoc :closed? true)
+      (assoc-in [:material :material/color] col/light-blue)))
 
+(def cone
+  (-> (shape/cone -1 0 :closed)
+      (xform/apply-transform
+       (xform/translation -0.33 1 -0.7))
+      (assoc-in [:material :material/color] col/dark-red)
+      (assoc-in [:materail :materail/ambient] 0.7)))
 
 (def light
   (light/point-light
@@ -104,7 +111,8 @@
       (update :world/objects conj middle-sphere)
       (update :world/objects conj right-cube)
       (update :world/objects conj left-sphere)
-      (update :world/objects conj cylinder)))
+      (update :world/objects conj cylinder)
+      (update :world/objects conj cone)))
 
 (defn write-canvas-to-ppm-file [canvas filename]
   (let [ppm-bytes (canv/canvas-to-p6-ppm canvas)]
