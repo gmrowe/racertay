@@ -1,5 +1,6 @@
 (ns racertay.shape
   (:require
+   [racertay.shapes.cube :as cube]
    [racertay.shapes.plane :as plane]
    [racertay.shapes.sphere :as sphere]
    [clojure.math :as math]
@@ -37,42 +38,8 @@
 (defn plane []
   (plane/map->IPlane (shape-data)))
 
-(defrecord ICube
-    [id transform inverse-transform material]
-  p/Shape
-  (local-normal-at [cube local-point]
-    (let [x (tup/x local-point)
-          y (tup/y local-point)
-          z (tup/z local-point)
-          maxc (max (abs x) (abs y) (abs z))]
-      (condp = maxc
-        (abs x) (tup/vect x 0 0)
-        (abs y) (tup/vect 0 y 0)
-        (abs z) (tup/vect 0 0 z))))
-  
-  (local-intersect [cube local-ray]
-    (letfn [(check-axis [origin direction]
-              (let [tmin-num (- -1 origin)
-                    tmax-num (- 1 origin)]
-                (sort
-                 (if (< fcmp/epsilon (abs direction))
-                   [(/ tmin-num direction) (/ tmax-num direction)]
-                   [(* tmin-num ##Inf) (* tmax-num ##Inf)]))))]
-      
-      (let [{:ray/keys [origin direction]} local-ray
-            [xtmin xtmax] (check-axis (tup/x origin) (tup/x direction))
-            [ytmin ytmax] (check-axis (tup/y origin) (tup/y direction))
-            [ztmin ztmax] (check-axis (tup/z origin) (tup/z direction))
-            tmin (max xtmin ytmin ztmin)
-            tmax (min xtmax ytmax ztmax)]
-        (if (<= tmin tmax)
-          (inter/intersections
-           (inter/intersection tmin cube)
-           (inter/intersection tmax cube))
-          inter/empty-intersections)))))
-
 (defn cube []
-  (map->ICube (shape-data)))
+  (cube/map->ICube (shape-data)))
 
 (defn- check-cylinder-cap? [ray t]
   (let [{:ray/keys [direction origin]} ray
