@@ -65,13 +65,10 @@
       (assoc-in [:material :material/reflective] 0.7)))
 
 (def cylinder
-  (-> (shape/cylinder)
+  (-> (shape/cylinder 1.6 0.5 :closed)
       (xform/apply-transform
        (xform/scaling 0.5 1.0 0.5)
        (xform/translation 0.44 -0.8 -1.5))
-      (assoc :maximum 1.6)
-      (assoc :minimum -0.5)
-      (assoc :closed? true)
       (assoc-in [:material :material/color] col/light-blue)))
 
 (def cone

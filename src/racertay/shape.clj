@@ -168,13 +168,15 @@
      (concat (intersect-cylinder-sides cylinder local-ray)
              (intersect-cylinder-caps cylinder local-ray)))))
 
-(defn cylinder []
-  (map->ICylinder
-   (merge
-    (shape-data)
-    {:minimum ##-Inf
-     :maximum ##Inf
-     :closed? false})))
+(defn cylinder
+  ([] (cylinder ##-Inf ##Inf :open))
+  ([minimum maximum closed?]
+   (map->ICylinder
+    (merge
+     (shape-data)
+     {:minimum minimum
+      :maximum maximum
+      :closed? (= closed? :closed)}))))
 
 (defn- intersect-cone-sides
   [cone ray]

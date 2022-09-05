@@ -325,9 +325,7 @@
   (testing "A cylinder with bounds at 1 and 2"
     (letfn [(cylinder-bounded-at-1-2-test
               [point direction expected-count]
-              (let [shape (-> (cylinder)
-                              (assoc :minimum 1)
-                              (assoc :maximum 2))
+              (let [shape (cylinder 1 2 :open)
                     r (ray/ray point (tup/normalize direction))
                     xs (p/local-intersect shape r)]
                 (is (= expected-count (count xs)))))]
@@ -351,10 +349,7 @@
    (testing "A closed cylinder with bounds at 1 and 2"
     (letfn [(closed-cylinder-intersection-test
               [point direction expected-count]
-              (let [shape (-> (cylinder)
-                              (assoc :minimum 1)
-                              (assoc :maximum 2)
-                              (assoc :closed? true))
+              (let [shape (cylinder 1 2 :closed)
                     r (ray/ray point (tup/normalize direction))
                     xs (p/local-intersect shape r)]
                 (is (= expected-count (count xs)))))]
@@ -372,10 +367,7 @@
   (testing "The normal vector"
     (letfn [(closed-cylinder-normal-test
               [point expected-normal]
-              (let [shape (-> (cylinder)
-                              (assoc :minimum 1)
-                              (assoc :maximum 2)
-                              (assoc :closed? true))]
+              (let [shape (cylinder 1 2 :closed)]
                 (is (tup/tup-eq?
                      expected-normal (p/local-normal-at shape point)))))]
       (testing "at the center of the bottom end cap"
