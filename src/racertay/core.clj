@@ -2,7 +2,7 @@
   (:require [clojure.java.io :as io]
             [racertay.camera :as cam]
             [racertay.canvas :as canv]
-            [racertay.scenes.primitive-scene :as scene])
+            [racertay.scenes.cone :as scene])
   (:gen-class))
 
 (defn write-canvas-to-ppm-file [canvas filename]
@@ -10,10 +10,10 @@
     (with-open [out (io/output-stream filename)]
       (.write out ppm-bytes))))
 
-(def width 300)
-(def height 200)
+(def width 800)
+(def height 600)
 
 (defn -main [& args]
   (let [{:keys [camera world]} (scene/scene width height)
         canvas (cam/render camera world :report)]
-    (write-canvas-to-ppm-file canvas "primitive-scene.ppm")))
+    (write-canvas-to-ppm-file canvas "cone.ppm")))
